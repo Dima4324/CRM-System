@@ -1,0 +1,86 @@
+.todoItem {
+  width: 57%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 20px 10px;
+  border-radius: 12px;
+  box-shadow: 0 0.4px 3px 1px rgba(34, 60, 80, 0.2);
+
+  .checkbox {
+    margin-top: 5px;
+    width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .checkboxLabel {
+    padding: 0 10px;
+    word-break: break-all;
+  }
+
+  .checkboxLabelClicked {
+    text-decoration: line-through;
+    color: #9b9998;
+  }
+
+  .checkboxInput {
+    appearance: none;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transition: 500ms;
+    border: 1px solid #e7e4dd;
+
+    &:checked {
+      background-image: url(/src/assets/check_mark_c36eavpl6mrx.svg);
+      background-size: 20px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    &:disabled {
+      background: #ccc;
+      border-color: #ccc;
+    }
+  }
+
+  .buttons {
+    width: 100px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+  }
+
+  $buttonSize: 40px;
+
+  @mixin buttonSettings() {
+    width: $buttonSize;
+    height: $buttonSize;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px;
+  }
+
+  .editButton {
+    background-image: url(/src/assets/edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg);
+    @include buttonSettings();
+  }
+
+  .deleteButton {
+    background-image: url(/src/assets/delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg);
+    @include buttonSettings();
+    background-color: #ff6756;
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}
