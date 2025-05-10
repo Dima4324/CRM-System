@@ -1,76 +1,64 @@
 import style from "./AddTodo.module.scss";
 import { Button } from "../Button/Button";
 import { useState } from "react";
-import { addTodo } from "../../api/addTodo";
-import { initialStateBodyRequest } from "../../utils/constants";
+import { addTodo } from "../../api/todos";
+import { Input } from "../Input/Input";
 
-export const AddTodo = ({ todoCompleteFlag, setTodoCompleteFlag }) => {
-  const [bodyRequest, setBodyRequest] = useState(initialStateBodyRequest);
-  const [validInput, setValidInput] = useState({
-    isValid: false,
-    message: "",
-    isLoading: false,
-  });
+export const AddTodo = ({ updateTodos }) => {
+  const [inputValue, setInputValue] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const changeInputValue = (e) => {
-    setBodyRequest({...bodyRequest, [e.target.name]: e.target.value });
+  const onChangeInputValue = (e) => {
+    setInputValue(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
+  const handleAddTodo = async (e) => {
     e.preventDefault();
 
-    if (bodyRequest.title.length < 2) {
-      setValidInput({
-        ...validInput,
-        isValid: false,
-        message: "Минимальная длина 2 символа",
-      });
+    if (inputValue.length < 2) {
+      setError("Минимальная длина 2 символа");
       return;
     }
 
-    if (bodyRequest.title.length > 64) {
-      setValidInput({
-        ...validInput,
-        isValid: false,
-        message: "Максимальная длина 64 символа",
-      });
+    if (inputValue.length > 64) {
+      setError("Максимальная длина 64 символа");
       return;
     }
 
-    setValidInput({
-      ...validInput,
-      isLoading: true,
-    });
+    setIsLoading(true);
+
+    const bodyRequest = {
+      title: inputValue,
+      isDone: false,
+    };
 
     await addTodo(bodyRequest);
-    setTodoCompleteFlag(!todoCompleteFlag);
-    setBodyRequest(initialStateBodyRequest);
+    await updateTodos();
 
-    setValidInput({
-      ...validInput,
-      isLoading: false,
-      isValid: true,
-    });
+    setInputValue("");
+
+    setIsLoading(false);
   };
 
   return (
-    <form className={style.addTodoForm} onSubmit={handleSubmit}>
+    <form className={style.addTodoForm} onSubmit={handleAddTodo}>
       <div className={style.inputContainer}>
-        <input
+        <Input
           type="text"
           name="title"
           placeholder="Введите задачу..."
-          value={bodyRequest.title}
-          onChange={changeInputValue}
+          value={inputValue}
           className={style.input}
+          onChange={onChangeInputValue}
           min={2}
           max={64}
         />
-        {!validInput.isValid && (
-          <p className={style.errorMessage}>{validInput.message}</p>
-        )}
+        {error && <p className={style.errorMessage}>{error}</p>}
       </div>
-      <Button className={style.button} text="Добавить" disabled={validInput.isLoading}>Добавить</Button>
+      <Button className={style.button} text="Добавить" disabled={isLoading}>
+        Добавить
+      </Button>
     </form>
   );
 };

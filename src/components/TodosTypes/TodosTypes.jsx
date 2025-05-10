@@ -1,46 +1,36 @@
 import style from "./TodosTypes.module.scss";
 
-export const TodosTypes = ({ info, filters, setFilters }) => {
-  const handleTypeClick = (e) => {
-    if (!filters[e.target.dataset.name]) {
-      setFilters({
-        all: false,
-        inWork: false,
-        done: false,
-        [e.target.dataset.name]: true,
-      });
-    }
-  };
+export const TodosTypes = ({ info, filter, handleType }) => {
 
   return (
     <div className={style.todosTypes}>
-      <h2
+      <p
         data-name="all"
         className={`${style.todosType} ${
-          filters.all ? style.todosTypeActive : ""
+          filter === "all" ? style.todosTypeActive : ""
         }`}
-        onClick={handleTypeClick}
+        onClick={handleType}
       >
         {`Все (${info.all})`}
-      </h2>
-      <h2
+      </p>
+      <p
         data-name="inWork"
         className={`${style.todosType} ${
-          filters.inWork ? style.todosTypeActive : ""
+          filter === "inWork" ? style.todosTypeActive : ""
         }`}
-        onClick={handleTypeClick}
+        onClick={handleType}
       >
         {`В работе (${info.inWork})`}
-      </h2>
-      <h2
-        data-name="done"
+      </p>
+      <p
+        data-name="completed"
         className={`${style.todosType} ${
-          filters.done ? style.todosTypeActive : ""
+          filter === "completed" ? style.todosTypeActive : ""
         }`}
-        onClick={handleTypeClick}
+        onClick={handleType}
       >
         {`Сделано (${info.completed})`}
-      </h2>
+      </p>
     </div>
   );
 };

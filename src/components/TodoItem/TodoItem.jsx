@@ -1,21 +1,38 @@
 import { createPortal } from "react-dom";
-import { deleteTodo } from "../../api/deleteTodo";
-import { updataTodo } from "../../api/updateTodo";
+import { deleteTodo, updataTodo } from "../../api/todos";
 import { Button } from "../Button/Button";
 import style from "./TodoItem.module.scss";
 import { useState } from "react";
 import { EditModal } from "../EditModal/EditModal";
+import { Input } from "../Input/Input";
 
-export const TodoItem = ({ todo, todoCompleteFlag, setTodoCompleteFlag }) => {
+export const TodoItem = ({ updateTodos, todo }) => {
   const [isChecked, setIsChecked] = useState(todo.isDone);
-  const [isOpen, setIsOpen] = useState(false);
+  const [inputValue, setInputValue] = useState(todo.title);
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const ClickDeleteTodoButton = async () => {
-    setIsLoading(true)
+  const onChangeInputValue = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleToggleIsEditing = () => {
+    setIsEditing(!isEditing);
+
+    if (isEditing) {
+      setInputValue(todo.title);
+      setError("");
+    }
+  };
+
+  const handleDeleteTodo = async () => {
+    setIsLoading(true);
+
     await deleteTodo(todo.id);
-    setTodoCompleteFlag(!todoCompleteFlag);
-    setIsLoading(false)
+    await updateTodos();
+
+    setIsLoading(false);
   };
 
   const handleCheckbox = async () => {
@@ -24,13 +41,36 @@ export const TodoItem = ({ todo, todoCompleteFlag, setTodoCompleteFlag }) => {
     };
 
     await updataTodo(todo.id, bodyRequest);
+    await updateTodos();
 
     setIsChecked(!isChecked);
-    setTodoCompleteFlag(!todoCompleteFlag);
   };
 
-  const handleOpenModal = () => {
-    setIsOpen(!isOpen);
+  const handleConfirmEditTodo = async (e) => {
+    e.preventDefault();
+
+    if (inputValue.length < 2) {
+      setError("Минимальная длина 2 символа");
+      return;
+    }
+
+    if (inputValue.length > 64) {
+      setError("Максимальная длина 64 символа");
+      return;
+    }
+
+    setIsLoading(true);
+
+    const bodyRequest = {
+      title: inputValue,
+    };
+
+    await updataTodo(todo.id, bodyRequest);
+    await updateTodos();
+
+    handleToggleIsEditing();
+
+    setIsLoading(false);
   };
 
   return (
@@ -42,27 +82,58 @@ export const TodoItem = ({ todo, todoCompleteFlag, setTodoCompleteFlag }) => {
           onChange={handleCheckbox}
           checked={isChecked}
         />
-        <label
-          className={`${style.checkboxLabel} ${
-            isChecked ? style.checkboxLabelClicked : ""
-          }`}
-        >
-          {todo.title}
-        </label>
+        {isEditing ? (
+          <div className={style.editTodoContainer}>
+            <Input
+              className={style.editTodoInput}
+              type="text"
+              name="title"
+              placeholder="Редактируйте задачу..."
+              value={inputValue}
+              onChange={onChangeInputValue}
+              min={2}
+              max={64}
+            />
+            {error && <p className={style.error}>{error}</p>}
+          </div>
+        ) : (
+          <label
+            className={`${style.checkboxLabel} ${
+              isChecked ? style.checkboxLabelClicked : ""
+            }`}
+          >
+            {todo.title}
+          </label>
+        )}
       </div>
       <div className={style.buttons}>
-        <Button className={style.editButton} onClick={handleOpenModal} />
-        <Button
-          className={style.deleteButton}
-          onClick={ClickDeleteTodoButton}
-          disabled={isLoading}
-        />
-      </div>
-      {isOpen &&
-        createPortal(
-          <EditModal title={todo.title} handleOpenModal={handleOpenModal} id={todo.id} todoCompleteFlag={todoCompleteFlag} setTodoCompleteFlag={setTodoCompleteFlag}/>,
-          document.body
+        {isEditing ? (
+          <>
+            <Button
+              className={style.editTodoSubmit}
+              onClick={handleConfirmEditTodo}
+              disabled={isLoading}
+            />
+            <Button
+              className={style.editTodoCancel}
+              onClick={handleToggleIsEditing}
+              disabled={isLoading}
+            />
+          </>
+        ) : (
+          <>
+            <Button
+              className={style.editButton}
+              onClick={handleToggleIsEditing}
+            />
+            <Button
+              className={style.deleteButton}
+              onClick={handleDeleteTodo}
+              disabled={isLoading}
+            />
+          </>
         )}
+      </div>
     </div>
   );
 };

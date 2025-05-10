@@ -5,8 +5,14 @@
 }
 
 .todosType {
+    font-size: 20px;
+    font-weight: bold;
+    opacity: 1;
+    transition: opacity 0.3s linear;
+
     &:hover {
-        cursor: pointer;
+      cursor: pointer;
+      opacity: 0.6;
     }
 }
 

@@ -1,8 +1,7 @@
-import style from "./Button.module.scss"
+import style from "./Button.module.scss";
 
-
-export const Button = ({ onClick, className = '', text = '', disabled, children }) => {
-    return (
-         <button className={`${style.default} ${className}`} onClick={onClick} disabled={disabled}>{children}</button>
-    )
-}
+export const Button = ({ className = "", children, ...props }) => {
+  return (
+    <button className={`${style.default} ${className}`} {...props}>{children}</button>
+  );
+};
