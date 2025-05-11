@@ -16,18 +16,19 @@
     }
 
     .errorMessage {
-        color: #FF0000;
+        color: #ff0000;
         font-size: 14px;
-        margin-top: 5px;
+        margin-top: 4px;
     }
 
     .button {
-        padding: 5px 20px;
+        padding: 4px 20px;
         border-radius: 7px;
         max-height: 38px;
-        &:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+        transition: background-color 0.3s linear;
+
+        &:hover {
+            background-color: #80a7f3;
         }
     }
 }

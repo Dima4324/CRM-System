@@ -2,17 +2,18 @@
     width: 58%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    margin: 0 auto 20px auto;
 }
 
 .todosType {
     font-size: 20px;
     font-weight: bold;
-    opacity: 1;
-    transition: opacity 0.3s linear;
+    transition: color 0.3s ease-in-out;
 
     &:hover {
-      cursor: pointer;
-      opacity: 0.6;
+        cursor: pointer;
+        color: #5693fa;
     }
 }
 

@@ -10,7 +10,7 @@
   box-shadow: 0 0.4px 3px 1px rgba(34, 60, 80, 0.2);
 
   .checkbox {
-    margin-top: 5px;
+    margin-top: 4px;
     width: fit-content;
     display: flex;
     justify-content: flex-start;
@@ -35,8 +35,7 @@
     height: 20px;
     border-radius: 50%;
     border: 1px solid #e7e4dd;
-    opacity: 1;
-    transition: opacity 0.3s linear;
+    transition: border 0.3s linear;
 
     &:checked {
       background-image: url(/src/assets/check_mark_c36eavpl6mrx.svg);
@@ -52,7 +51,7 @@
 
     &:hover {
       cursor: pointer;
-      opacity: 0.8;
+      border: #5693fa 1px solid;
     }
   }
 
@@ -75,13 +74,6 @@
     background-size: 20px;
   }
 
-  @mixin buttonDisabled() {
-    &:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-  }
-
   .editTodoContainer {
     width: 90%;
   }
@@ -100,24 +92,42 @@
   .editTodoSubmit {
     background-image: url(/src/assets/check_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg);
     @include buttonSettings();
-    @include buttonDisabled();
+    transition: background-color 0.3s linear;
+
+    &:hover {
+      background-color: #80a7f3;
+    }
   }
 
   .editTodoCancel {
     background-image: url(/src/assets/close_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg);
     @include buttonSettings();
     background-color: #ff6756;
+    transition: background-color 0.3s linear;
+
+    &:hover {
+      background-color: #f18d7e;
+    }
   }
 
   .editButton {
     background-image: url(/src/assets/edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg);
     @include buttonSettings();
+    transition: background-color 0.3s linear;
+
+    &:hover {
+      background-color: #80a7f3;
+    }
   }
 
   .deleteButton {
     background-image: url(/src/assets/delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg);
     @include buttonSettings();
-    @include buttonDisabled();
     background-color: #ff6756;
+    transition: background-color 0.3s linear;
+
+    &:hover {
+      background-color: #f18d7e;
+    }
   }
 }

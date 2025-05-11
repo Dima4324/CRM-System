@@ -14,7 +14,7 @@
 
 .modal {
     width: 40%;
-    background-color: #F4F4F4;
+    background-color: #f4f4f4;
     color: #cc0000;
     padding: 20px;
     text-align: center;
@@ -22,20 +22,21 @@
 }
 
 .editTodoInput {
-    padding: 5px 10px;
+    padding: 4px 10px;
     margin-right: 10px;
     border-radius: 7px;
     outline: none;
     border: 1px solid #e7e4dd;
     width: 60%;
+
     &:focus {
-        border: 1px solid #5693FA;
+        border: 1px solid #5693fa;
         box-shadow: 0 0 5px rgba(86, 147, 250, 0.5);
     }
 }
 
 @mixin buttonSettings() {
-   padding: 5px 10px;
+    padding: 4px 10px;
 }
 
 .editTodoSubmit {

@@ -3,11 +3,8 @@
     border: none;
     color: #fff;
     border-radius: 7px;
-    opacity: 1;
-    transition: opacity 0.3s linear;
     
     &:hover {
       cursor: pointer;
-      opacity: 0.8;
     }
 }

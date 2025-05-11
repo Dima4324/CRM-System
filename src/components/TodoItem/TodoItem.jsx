@@ -1,9 +1,7 @@
-import { createPortal } from "react-dom";
 import { deleteTodo, updataTodo } from "../../api/todos";
 import { Button } from "../Button/Button";
 import style from "./TodoItem.module.scss";
 import { useState } from "react";
-import { EditModal } from "../EditModal/EditModal";
 import { Input } from "../Input/Input";
 
 export const TodoItem = ({ updateTodos, todo }) => {
@@ -52,9 +50,7 @@ export const TodoItem = ({ updateTodos, todo }) => {
     if (inputValue.length < 2) {
       setError("Минимальная длина 2 символа");
       return;
-    }
-
-    if (inputValue.length > 64) {
+    } else if (inputValue.length > 64) {
       setError("Максимальная длина 64 символа");
       return;
     }

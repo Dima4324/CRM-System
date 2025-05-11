@@ -11,7 +11,7 @@ export const TodosTypes = ({ info, filter, handleType }) => {
         }`}
         onClick={handleType}
       >
-        {`Все (${info.all})`}
+        {`Все (${!info.all ? "0" : info.all})`}
       </p>
       <p
         data-name="inWork"
@@ -20,7 +20,7 @@ export const TodosTypes = ({ info, filter, handleType }) => {
         }`}
         onClick={handleType}
       >
-        {`В работе (${info.inWork})`}
+        {`В работе (${!info.inWork ? "0" : info.inWork})`}
       </p>
       <p
         data-name="completed"
@@ -29,7 +29,7 @@ export const TodosTypes = ({ info, filter, handleType }) => {
         }`}
         onClick={handleType}
       >
-        {`Сделано (${info.completed})`}
+        {`Сделано (${!info.completed ? "0" : info.completed})`}
       </p>
     </div>
   );

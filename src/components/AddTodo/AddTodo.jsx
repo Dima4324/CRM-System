@@ -19,9 +19,7 @@ export const AddTodo = ({ updateTodos }) => {
     if (inputValue.length < 2) {
       setError("Минимальная длина 2 символа");
       return;
-    }
-
-    if (inputValue.length > 64) {
+    } else if (inputValue.length > 64) {
       setError("Максимальная длина 64 символа");
       return;
     }
