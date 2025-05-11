@@ -1,0 +1,10 @@
+.default {
+    background-color: #5693FA;
+    border: none;
+    color: #fff;
+    border-radius: 7px;
+    
+    &:hover {
+      cursor: pointer;
+    }
+}

@@ -1,0 +1,24 @@
+.todosTypes {
+    width: 58%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto 20px auto;
+}
+
+.todosType {
+    font-size: 20px;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+
+    &:hover {
+        cursor: pointer;
+        color: #5693fa;
+    }
+}
+
+.todosTypeActive {
+    color: #5693fa;
+    font-weight: 600;
+    text-decoration: underline;
+}
