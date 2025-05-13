@@ -1,6 +1,6 @@
 import style from "./TodosList.module.scss";
 import { TodoItem } from "../TodoItem/TodoItem";
-import { Todo } from "../../interfaces/todos";
+import { Todo } from "../../types/todos";
 
 interface TodosListProps {
   updateTodos: () => Promise<void>;

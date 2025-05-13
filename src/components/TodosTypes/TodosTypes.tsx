@@ -1,10 +1,10 @@
-import { TodoInfo } from "../../interfaces/todos";
+import { TodoInfo, TodosFilter } from "../../types/todos";
 import { Button } from "../Button/Button";
 import style from "./TodosTypes.module.scss";
 
 interface TodosTypesProps {
   info: TodoInfo;
-  filter: string;
+  filter: TodosFilter;
   handleType: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 

@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { AddTodo, TodosList, TodosTypes } from "../../components";
 import style from "./TodosPage.module.scss";
 import { getTodos } from "../../api/todos";
-import { Todo, TodoInfo } from "../../interfaces/todos";
+import { Todo, TodoInfo, TodosFilter } from "../../types/todos";
+import { isTodosFilter } from "../../utils/typeGuards";
 
 export const TodosPage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -11,12 +12,12 @@ export const TodosPage = () => {
     completed: 0,
     inWork: 0,
   });
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState<TodosFilter>("all");
   const [isLoading, setIsloading] = useState(false);
 
   const handleType = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    const name = (e.target as HTMLButtonElement).dataset.name;
-    if (name) {
+    const name = e.currentTarget.dataset.name;
+    if (isTodosFilter(name)) {
       setFilter(name);
     }
   };

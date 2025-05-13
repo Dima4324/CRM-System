@@ -3,7 +3,7 @@ import { Button } from "../Button/Button";
 import style from "./TodoItem.module.scss";
 import { useState } from "react";
 import { Input } from "../Input/Input";
-import { Todo, TodoRequest } from "../../interfaces/todos";
+import { Todo, TodoRequest } from "../../types/todos";
 
 interface TodoItemProps {
   updateTodos: () => Promise<void>;
