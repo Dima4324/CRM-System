@@ -1,6 +1,8 @@
+import { Todo, TodoInfo, MetaResponse, TodoRequest } from "../interfaces/todos";
+
 const BASE_URL = "https://easydev.club/api/v1/todos";
 
-export const addTodo = async (bodyRequest) => {
+export const addTodo = async (bodyRequest: TodoRequest): Promise<Todo> => {
     try {
         const response = await fetch(`${BASE_URL}`, {
             method: "POST",
@@ -14,16 +16,17 @@ export const addTodo = async (bodyRequest) => {
             throw new Error("Ошибка при добавлении задачи");
         }
 
-        const data = await response.json();
+        const data: Todo = await response.json();
 
         return data;
+
     } catch (error) {
         console.error("Ошибка:", error);
-
+        throw error;
     }
 }
 
-export const getTodos = async (filter) => {
+export const getTodos = async (filter: string): Promise<MetaResponse<Todo, TodoInfo>> => {
     try {
         const response = await fetch(`${BASE_URL}?filter=${filter}`);
 
@@ -31,16 +34,17 @@ export const getTodos = async (filter) => {
             throw new Error('Ошибка при загрузке данных');
         }
 
-        const data = await response.json();
+        const data: MetaResponse<Todo, TodoInfo> = await response.json();
 
         return data;
 
     } catch (error) {
         console.error('Ошибка:', error);
+        throw error;
     }
 }
 
-export const updataTodo = async (id, bodyRequest) => {
+export const updateTodo = async (id: number, bodyRequest: TodoRequest): Promise<Todo> => {
 
     try {
         const response = await fetch(`${BASE_URL}/${id}`, {
@@ -55,12 +59,17 @@ export const updataTodo = async (id, bodyRequest) => {
             throw new Error("Ошибка при обновлении задачи");
         }
 
+        const data: Todo = await response.json();
+
+        return data;
+
     } catch (error) {
         console.error("Ошибка:", error);
+        throw error;
     }
 }
 
-export const deleteTodo = async (id) => {
+export const deleteTodo = async (id: number): Promise<void> => {
     try {
        const response = await fetch(`${BASE_URL}/${id}`, {
             method: "DELETE",
@@ -72,8 +81,9 @@ export const deleteTodo = async (id) => {
         if (!response.ok) {
             throw new Error("Ошибка при удалении задачи");
         }
+
     } catch (error) {
         console.error("Ошибка:", error);
-        
+        throw error;
     }
 }

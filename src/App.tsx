@@ -1,8 +1,7 @@
 import './App.scss';
 import { TodosPage } from './pages/TodosPage/TodosPage';
 
-function App() {
-
+const App = () => {
 	return (
 		<TodosPage/>
 	);

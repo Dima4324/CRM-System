@@ -1,36 +1,44 @@
+import { TodoInfo } from "../../interfaces/todos";
+import { Button } from "../Button/Button";
 import style from "./TodosTypes.module.scss";
 
-export const TodosTypes = ({ info, filter, handleType }) => {
+interface TodosTypesProps {
+  info: TodoInfo;
+  filter: string;
+  handleType: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+export const TodosTypes: React.FC<TodosTypesProps> = ({ info, filter, handleType }) => {
 
   return (
     <div className={style.todosTypes}>
-      <p
+      <Button
         data-name="all"
         className={`${style.todosType} ${
           filter === "all" ? style.todosTypeActive : ""
         }`}
         onClick={handleType}
       >
-        {`Все (${!info.all ? "0" : info.all})`}
-      </p>
-      <p
+        {`Все (${info.all})`}
+      </Button>
+      <Button
         data-name="inWork"
         className={`${style.todosType} ${
           filter === "inWork" ? style.todosTypeActive : ""
         }`}
         onClick={handleType}
       >
-        {`В работе (${!info.inWork ? "0" : info.inWork})`}
-      </p>
-      <p
+        {`В работе (${info.inWork})`}
+      </Button>
+      <Button
         data-name="completed"
         className={`${style.todosType} ${
           filter === "completed" ? style.todosTypeActive : ""
         }`}
         onClick={handleType}
       >
-        {`Сделано (${!info.completed ? "0" : info.completed})`}
-      </p>
+        {`Сделано (${info.completed})`}
+      </Button>
     </div>
   );
 };

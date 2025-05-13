@@ -1,21 +1,27 @@
-import { deleteTodo, updataTodo } from "../../api/todos";
+import { deleteTodo, updateTodo } from "../../api/todos";
 import { Button } from "../Button/Button";
 import style from "./TodoItem.module.scss";
 import { useState } from "react";
 import { Input } from "../Input/Input";
+import { Todo, TodoRequest } from "../../interfaces/todos";
 
-export const TodoItem = ({ updateTodos, todo }) => {
+interface TodoItemProps {
+  updateTodos: () => Promise<void>;
+  todo: Todo;
+}
+
+export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
   const [isChecked, setIsChecked] = useState(todo.isDone);
   const [inputValue, setInputValue] = useState(todo.title);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const onChangeInputValue = (e) => {
+  const onChangeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
-  const handleToggleIsEditing = () => {
+  const handleToggleIsEditing = (): void => {
     setIsEditing(!isEditing);
 
     if (isEditing) {
@@ -38,13 +44,13 @@ export const TodoItem = ({ updateTodos, todo }) => {
       isDone: !isChecked,
     };
 
-    await updataTodo(todo.id, bodyRequest);
+    await updateTodo(todo.id, bodyRequest);
     await updateTodos();
 
     setIsChecked(!isChecked);
   };
 
-  const handleConfirmEditTodo = async (e) => {
+  const handleConfirmEditTodo = async (e: React.MouseEvent<HTMLButtonElement> ): Promise<void> => {
     e.preventDefault();
 
     if (inputValue.length < 2) {
@@ -57,11 +63,11 @@ export const TodoItem = ({ updateTodos, todo }) => {
 
     setIsLoading(true);
 
-    const bodyRequest = {
+    const bodyRequest: TodoRequest = {
       title: inputValue,
     };
 
-    await updataTodo(todo.id, bodyRequest);
+    await updateTodo(todo.id, bodyRequest);
     await updateTodos();
 
     handleToggleIsEditing();
