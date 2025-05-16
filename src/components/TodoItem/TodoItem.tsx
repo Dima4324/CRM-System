@@ -1,7 +1,7 @@
 import { deleteTodo, updateTodo } from "../../api/todos";
 import { Button } from "../Button/Button";
 import style from "./TodoItem.module.scss";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Input } from "../Input/Input";
 import { Todo, TodoRequest } from "../../types/todos";
 
@@ -17,6 +17,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const onChangeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
@@ -31,12 +33,16 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
   };
 
   const handleDeleteTodo = async () => {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    await deleteTodo(todo.id);
-    await updateTodos();
-
-    setIsLoading(false);
+      await deleteTodo(todo.id);
+      await updateTodos();
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCheckbox = async () => {
@@ -50,7 +56,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
     setIsChecked(!isChecked);
   };
 
-  const handleConfirmEditTodo = async (e: React.MouseEvent<HTMLButtonElement> ): Promise<void> => {
+  const handleConfirmEditTodo = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     if (inputValue.length < 2) {
@@ -75,10 +83,16 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isEditing]);
+
   return (
     <div className={style.todoItem}>
       <div className={style.checkbox}>
-        <input
+        <Input
           className={style.checkboxInput}
           type="checkbox"
           onChange={handleCheckbox}
@@ -90,6 +104,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
               className={style.editTodoInput}
               type="text"
               name="title"
+              ref={inputRef}
               placeholder="Редактируйте задачу..."
               value={inputValue}
               onChange={onChangeInputValue}

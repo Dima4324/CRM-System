@@ -17,7 +17,7 @@ export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
     setInputValue(e.target.value);
   };
 
-  const handleAddTodo = async (e: React.MouseEvent<HTMLFormElement>) => {
+  const handleAddTodo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (inputValue.length < 2) {
@@ -39,6 +39,7 @@ export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
     await updateTodos();
 
     setInputValue("");
+    setError("");
 
     setIsLoading(false);
   };

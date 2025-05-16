@@ -5,10 +5,10 @@ import style from "./TodosTypes.module.scss";
 interface TodosTypesProps {
   info: TodoInfo;
   filter: TodosFilter;
-  handleType: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleFilterTodo: (filter: TodosFilter) => void;
 }
 
-export const TodosTypes: React.FC<TodosTypesProps> = ({ info, filter, handleType }) => {
+export const TodosTypes: React.FC<TodosTypesProps> = ({ info, filter, handleFilterTodo }) => {
 
   return (
     <div className={style.todosTypes}>
@@ -17,7 +17,7 @@ export const TodosTypes: React.FC<TodosTypesProps> = ({ info, filter, handleType
         className={`${style.todosType} ${
           filter === "all" ? style.todosTypeActive : ""
         }`}
-        onClick={handleType}
+        onClick={() => handleFilterTodo("all")}
       >
         {`Все (${info.all})`}
       </Button>
@@ -26,7 +26,7 @@ export const TodosTypes: React.FC<TodosTypesProps> = ({ info, filter, handleType
         className={`${style.todosType} ${
           filter === "inWork" ? style.todosTypeActive : ""
         }`}
-        onClick={handleType}
+        onClick={() => handleFilterTodo("inWork")}
       >
         {`В работе (${info.inWork})`}
       </Button>
@@ -35,7 +35,7 @@ export const TodosTypes: React.FC<TodosTypesProps> = ({ info, filter, handleType
         className={`${style.todosType} ${
           filter === "completed" ? style.todosTypeActive : ""
         }`}
-        onClick={handleType}
+        onClick={() => handleFilterTodo("completed")}
       >
         {`Сделано (${info.completed})`}
       </Button>

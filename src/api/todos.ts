@@ -40,6 +40,7 @@ export const getTodos = async (filter: TodosFilter): Promise<MetaResponse<Todo, 
 
     } catch (error) {
         console.error('Ошибка:', error);
+        
         throw error;
     }
 }
@@ -69,7 +70,7 @@ export const updateTodo = async (id: number, bodyRequest: TodoRequest): Promise<
     }
 }
 
-export const deleteTodo = async (id: number): Promise<void> => {
+export const deleteTodo = async (id: number): Promise<string> => {
     try {
        const response = await fetch(`${BASE_URL}/${id}`, {
             method: "DELETE",
@@ -81,6 +82,10 @@ export const deleteTodo = async (id: number): Promise<void> => {
         if (!response.ok) {
             throw new Error("Ошибка при удалении задачи");
         }
+
+        const data = await response.text();
+
+        return data;
 
     } catch (error) {
         console.error("Ошибка:", error);

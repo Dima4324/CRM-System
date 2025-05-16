@@ -3,7 +3,6 @@ import { AddTodo, TodosList, TodosTypes } from "../../components";
 import style from "./TodosPage.module.scss";
 import { getTodos } from "../../api/todos";
 import { Todo, TodoInfo, TodosFilter } from "../../types/todos";
-import { isTodosFilter } from "../../utils/typeGuards";
 
 export const TodosPage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -15,27 +14,27 @@ export const TodosPage = () => {
   const [filter, setFilter] = useState<TodosFilter>("all");
   const [isLoading, setIsloading] = useState(false);
 
-  const handleType = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    const name = e.currentTarget.dataset.name;
-    if (isTodosFilter(name)) {
-      setFilter(name);
-    }
+  const handleFilterTodo = (filter: TodosFilter): void => {
+      setFilter(filter);
   };
 
   const updateTodos = useCallback(async (): Promise<void> => {
-    setIsloading(true);
+    try {
+      setIsloading(true);
 
-    const todos = await getTodos(filter);
+      const todos = await getTodos(filter);
 
-    setTodos(todos.data);
+      setTodos(todos.data);
 
-    if (todos.info) {
-      setInfo(todos.info);
+      if (todos.info) {
+        setInfo(todos.info);
+      }
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsloading(false);
     }
-
-    setIsloading(false);
   }, [filter]);
-  
 
   useEffect(() => {
     updateTodos();
@@ -44,7 +43,11 @@ export const TodosPage = () => {
   return (
     <main className={style.todosPage}>
       <AddTodo updateTodos={updateTodos} />
-      <TodosTypes info={info} filter={filter} handleType={handleType} />
+      <TodosTypes
+        info={info}
+        filter={filter}
+        handleFilterTodo={handleFilterTodo}
+      />
       <TodosList
         updateTodos={updateTodos}
         isLoading={isLoading}
