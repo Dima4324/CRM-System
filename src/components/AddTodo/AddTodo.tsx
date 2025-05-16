@@ -1,19 +1,23 @@
 import style from "./AddTodo.module.scss";
 import { Button } from "../Button/Button";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { addTodo } from "../../api/todos";
 import { Input } from "../Input/Input";
 
-export const AddTodo = ({ updateTodos }) => {
+interface AddTodoProps {
+  updateTodos: () => Promise<void>;
+}
+
+export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const onChangeInputValue = (e) => {
+  const onChangeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
-  const handleAddTodo = async (e) => {
+  const handleAddTodo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (inputValue.length < 2) {
@@ -35,6 +39,7 @@ export const AddTodo = ({ updateTodos }) => {
     await updateTodos();
 
     setInputValue("");
+    setError("");
 
     setIsLoading(false);
   };
@@ -54,7 +59,7 @@ export const AddTodo = ({ updateTodos }) => {
         />
         {error && <p className={style.errorMessage}>{error}</p>}
       </div>
-      <Button className={style.button} text="Добавить" disabled={isLoading}>
+      <Button className={style.button} disabled={isLoading}>
         Добавить
       </Button>
     </form>

@@ -3,12 +3,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 auto 20px auto;
+    margin: 20px auto 32px auto;
 }
 
 .todosType {
+    color: #000;
+    background-color: inherit;
     font-size: 20px;
     font-weight: bold;
+    border: none;
     transition: color 0.3s ease-in-out;
 
     &:hover {

@@ -1,7 +1,14 @@
 import style from "./TodosList.module.scss";
 import { TodoItem } from "../TodoItem/TodoItem";
+import { Todo } from "../../types/todos";
 
-export const TodosList = ({ updateTodos, isLoading, todos }) => {
+interface TodosListProps {
+  updateTodos: () => Promise<void>;
+  isLoading: boolean;
+  todos: Todo[];
+}
+
+export const TodosList: React.FC<TodosListProps> = ({ updateTodos, isLoading, todos }) => {
   return (
     <div className={style.todosList}>
       {isLoading ? (
