@@ -35,6 +35,7 @@ const formItemConfig = {
 
 export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [form] = Form.useForm();
 
     const [api, contextHolder] = notification.useNotification();
 
@@ -57,6 +58,7 @@ export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
 
             await addTodo(bodyRequest);
             await updateTodos();
+            form.resetFields()
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 openNotification("Ошибка", error.message);
@@ -69,7 +71,7 @@ export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
     return (
         <>
             {contextHolder}
-            <Form layout="inline" onFinish={handleAddTodo} {...formConfig}>
+            <Form form={form} layout="inline" onFinish={handleAddTodo} {...formConfig}>
                 <Form.Item name="title" {...formItemConfig}>
                     <Input
                         placeholder="Введите задачу..."
