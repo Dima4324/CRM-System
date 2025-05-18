@@ -1,58 +1,91 @@
 import { useCallback, useEffect, useState } from "react";
 import { AddTodo, TodosList, TodosTypes } from "../../components";
-import style from "./TodosPage.module.scss";
 import { getTodos } from "../../api/todos";
 import { Todo, TodoInfo, TodosFilter } from "../../types/todos";
+import { Typography, notification } from "antd";
+import { FrownOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 export const TodosPage = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [info, setInfo] = useState<TodoInfo>({
-    all: 0,
-    completed: 0,
-    inWork: 0,
-  });
-  const [filter, setFilter] = useState<TodosFilter>("all");
-  const [isLoading, setIsloading] = useState(false);
+    const [todos, setTodos] = useState<Todo[]>([]);
+    const [info, setInfo] = useState<TodoInfo>({
+        all: 0,
+        completed: 0,
+        inWork: 0,
+    });
+    const [filter, setFilter] = useState<TodosFilter>("all");
+    const [isLoading, setIsloading] = useState(false);
 
-  const handleFilterTodo = (filter: TodosFilter): void => {
-      setFilter(filter);
-  };
+    const [api, contextHolder] = notification.useNotification();
 
-  const updateTodos = useCallback(async (): Promise<void> => {
-    try {
-      setIsloading(true);
+    const openNotification = useCallback(
+        (errorType: string, errorMessage: string) => {
+            api.error({
+                message: errorType,
+                description: errorMessage,
+                icon: <FrownOutlined style={{ color: "#ff0e0e" }} />,
+            });
+        },
+        [api]
+    );
 
-      const todos = await getTodos(filter);
+    const handleFilterTodo = (filter: TodosFilter): void => {
+        setFilter(filter);
+    };
 
-      setTodos(todos.data);
+    const updateTodos = useCallback(async (): Promise<void> => {
+        try {
+            setIsloading(true);
 
-      if (todos.info) {
-        setInfo(todos.info);
-      }
-    } catch (error) {
-      alert(error);
-    } finally {
-      setIsloading(false);
-    }
-  }, [filter]);
+            const todos = await getTodos(filter);
 
-  useEffect(() => {
-    updateTodos();
-  }, [filter, updateTodos]);
+            setTodos(todos.data);
 
-  return (
-    <main className={style.todosPage}>
-      <AddTodo updateTodos={updateTodos} />
-      <TodosTypes
-        info={info}
-        filter={filter}
-        handleFilterTodo={handleFilterTodo}
-      />
-      <TodosList
-        updateTodos={updateTodos}
-        isLoading={isLoading}
-        todos={todos}
-      />
-    </main>
-  );
+            if (todos.info) {
+                setInfo(todos.info);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                openNotification("Ошибка", error.message);
+            }
+        } finally {
+            setIsloading(false);
+        }
+    }, [filter, openNotification]);
+
+    useEffect(() => {
+        updateTodos();
+    }, [filter, updateTodos]);
+
+    useEffect(() => {
+        const interval: NodeJS.Timeout = setInterval(() => {
+            updateTodos();
+        }, 5000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    });
+
+    return (
+        <>
+            {contextHolder}
+            <main>
+                <Typography.Title level={2} style={{ textAlign: "center" }}>
+                    Список задач
+                </Typography.Title>
+                <AddTodo updateTodos={updateTodos} />
+                <TodosTypes
+                    info={info}
+                    filter={filter}
+                    handleFilterTodo={handleFilterTodo}
+                />
+                <TodosList
+                    updateTodos={updateTodos}
+                    isLoading={isLoading}
+                    todos={todos}
+                />
+            </main>
+        </>
+    );
 };

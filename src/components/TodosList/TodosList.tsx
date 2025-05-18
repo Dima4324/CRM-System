@@ -1,6 +1,7 @@
-import style from "./TodosList.module.scss";
 import { TodoItem } from "../TodoItem/TodoItem";
+import { Flex, List, Spin, Typography } from "antd";
 import { Todo } from "../../types/todos";
+import { Loading3QuartersOutlined } from "@ant-design/icons";
 
 interface TodosListProps {
   updateTodos: () => Promise<void>;
@@ -8,19 +9,37 @@ interface TodosListProps {
   todos: Todo[];
 }
 
-export const TodosList: React.FC<TodosListProps> = ({ updateTodos, isLoading, todos }) => {
+const flexConfig = {
+  vertical: true,
+  align: "center",
+  justify: "center",
+  gap: "20px",
+};
+
+export const TodosList: React.FC<TodosListProps> = ({
+  updateTodos,
+  isLoading,
+  todos,
+}) => {
   return (
-    <div className={style.todosList}>
+    <Flex {...flexConfig}>
       {isLoading ? (
-        <h2 className={style.todosListTitle}>Загрузка...</h2>
+        <Flex align="center" justify="center">
+          <Spin indicator={<Loading3QuartersOutlined spin/>} size="large"/>
+        </Flex>
       ) : todos && todos.length === 0 ? (
-        <h2 className={style.emptyList}>Список задач пуст</h2>
+        <Typography.Title level={2}>Список задач пуст</Typography.Title>
       ) : (
-        todos &&
-        todos.map((todo) => (
-          <TodoItem updateTodos={updateTodos} key={todo.id} todo={todo} />
-        ))
+        <List
+          dataSource={todos}
+          style={{ width: "57%", height: "100%" }}
+          renderItem={(todo) => (
+            <List.Item key={todo.id}>
+              <TodoItem updateTodos={updateTodos} todo={todo} />
+            </List.Item>
+          )}
+        />
       )}
-    </div>
+    </Flex>
   );
 };
