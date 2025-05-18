@@ -1,5 +1,5 @@
 import { Form, Button, Input, notification } from "antd";
-import { FC, useState } from "react";
+import { FC, memo, useState } from "react";
 import { addTodo } from "../../api/todos";
 import {
     maxLengthInputValue,
@@ -33,7 +33,7 @@ const formItemConfig = {
     ],
 };
 
-export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
+export const AddTodo: FC<AddTodoProps> = memo(({ updateTodos }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [form] = Form.useForm();
 
@@ -93,4 +93,4 @@ export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
             </Form>
         </>
     );
-};
+});

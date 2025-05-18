@@ -38,7 +38,7 @@ export const getTodos = async (
     filter: TodosFilter
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
     try {
-        const response = await instance.get(`/todos?filter=${filter}`);
+        const response = await instance.get(`/todos`, { params: { filter } });
 
         if (response.statusText !== "OK") {
             throw new Error("Ошибка при загрузке данных");

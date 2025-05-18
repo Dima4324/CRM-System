@@ -149,7 +149,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
             {contextHolder}
             <Flex justify="space-between" align="center" {...todoItemConfig}>
                 <Flex justify="flex-start" align="center" gap="10px" flex={1}>
-                    <Checkbox onChange={handleCheckbox} checked={isChecked} />
+                    <Checkbox onChange={handleCheckbox} checked={isChecked} disabled={isLoading}/>
                     {isEditing ? (
                         <>
                             <Form
@@ -205,6 +205,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
                                     type="primary"
                                     icon={<EditOutlined />}
                                     onClick={handleToggleIsEditing}
+                                    disabled={isLoading}
                                 />
                                 <Button
                                     size="large"
