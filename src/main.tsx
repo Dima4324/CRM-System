@@ -8,6 +8,6 @@ createRoot(document.getElementById('root') as HTMLElement).render(
     <BrowserRouter>
   <StrictMode>
     <App />
-  </StrictMode>,
+  </StrictMode>
     </BrowserRouter>
 )

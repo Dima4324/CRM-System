@@ -19,13 +19,13 @@ const instance = axios.create({
 
 export const addTodo = async (bodyRequest: TodoRequest): Promise<Todo> => {
     try {
-        const response = await instance.post("/todos", bodyRequest);
+        const response = await instance.post<Todo>("/todos", bodyRequest);
 
         if (response.statusText !== "OK") {
             throw new Error("Ошибка при загрузке данных");
         }
 
-        const data: Todo = response.data;
+        const data = response.data;
 
         return data;
     } catch (error) {
@@ -38,13 +38,13 @@ export const getTodos = async (
     filter: TodosFilter
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
     try {
-        const response = await instance.get(`/todos`, { params: { filter } });
+        const response = await instance.get<MetaResponse<Todo, TodoInfo>>(`/todos`, { params: { filter } });
 
         if (response.statusText !== "OK") {
             throw new Error("Ошибка при загрузке данных");
         }
 
-        const data: MetaResponse<Todo, TodoInfo> = response.data;
+        const data = response.data;
 
         return data;
     } catch (error) {
@@ -59,13 +59,13 @@ export const updateTodo = async (
     bodyRequest: TodoRequest
 ): Promise<Todo> => {
     try {
-        const response = await instance.put(`/todos/${id}`, bodyRequest);
+        const response = await instance.put<Todo>(`/todos/${id}`, bodyRequest);
 
         if (response.statusText !== "OK") {
             throw new Error("Ошибка при загрузке данных");
         }
 
-        const data: Todo = response.data;
+        const data = response.data;
 
         return data;
     } catch (error) {
@@ -76,13 +76,13 @@ export const updateTodo = async (
 
 export const deleteTodo = async (id: number): Promise<string> => {
     try {
-        const response = await instance.delete(`/todos/${id}`);
+        const response = await instance.delete<string>(`/todos/${id}`);
 
         if (response.statusText !== "OK") {
             throw new Error("Ошибка при загрузке данных");
         }
 
-        const data = await response.data;
+        const data = response.data;
 
         return data;
     } catch (error) {
