@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { AddTodo, TodosList, TodosTypes } from "../../components";
+import { AddTodo, TodosList, TodosFilters } from "../../components";
 import { getTodos } from "../../api/todos";
 import { Todo, TodoInfo, TodosFilter } from "../../types/todos";
 import { Typography, notification } from "antd";
@@ -13,7 +13,7 @@ export const TodosPage = () => {
         completed: 0,
         inWork: 0,
     });
-    const [filter, setFilter] = useState<TodosFilter>("all");
+    const [filter, setFilter] = useState<TodosFilter>(TodosFilter.ALL);
     const [isLoading, setIsloading] = useState(false);
 
     const [api, contextHolder] = notification.useNotification();
@@ -65,7 +65,7 @@ export const TodosPage = () => {
         return () => {
             clearInterval(interval);
         };
-    });
+    }, [updateTodos]);
 
     return (
         <>
@@ -75,7 +75,7 @@ export const TodosPage = () => {
                     Список задач
                 </Typography.Title>
                 <AddTodo updateTodos={updateTodos} />
-                <TodosTypes
+                <TodosFilters
                     info={info}
                     filter={filter}
                     handleFilterTodo={handleFilterTodo}

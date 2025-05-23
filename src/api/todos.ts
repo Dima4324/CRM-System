@@ -9,7 +9,7 @@ import {
 
 const BASE_URL = "https://easydev.club/api/v1";
 
-const instance = axios.create({
+const todosAPI = axios.create({
     baseURL: BASE_URL,
     timeout: 10000,
     headers: {
@@ -19,9 +19,9 @@ const instance = axios.create({
 
 export const addTodo = async (bodyRequest: TodoRequest): Promise<Todo> => {
     try {
-        const response = await instance.post<Todo>("/todos", bodyRequest);
+        const response = await todosAPI.post<Todo>("/todos", bodyRequest);
 
-        if (response.statusText !== "OK") {
+        if (response.status !== 200) {
             throw new Error("Ошибка при загрузке данных");
         }
 
@@ -38,9 +38,9 @@ export const getTodos = async (
     filter: TodosFilter
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
     try {
-        const response = await instance.get<MetaResponse<Todo, TodoInfo>>(`/todos`, { params: { filter } });
+        const response = await todosAPI.get<MetaResponse<Todo, TodoInfo>>(`/todos`, { params: { filter } });
 
-        if (response.statusText !== "OK") {
+        if (response.status !== 200) {
             throw new Error("Ошибка при загрузке данных");
         }
 
@@ -59,9 +59,9 @@ export const updateTodo = async (
     bodyRequest: TodoRequest
 ): Promise<Todo> => {
     try {
-        const response = await instance.put<Todo>(`/todos/${id}`, bodyRequest);
+        const response = await todosAPI.put<Todo>(`/todos/${id}`, bodyRequest);
 
-        if (response.statusText !== "OK") {
+        if (response.status !== 200) {
             throw new Error("Ошибка при загрузке данных");
         }
 
@@ -76,9 +76,9 @@ export const updateTodo = async (
 
 export const deleteTodo = async (id: number): Promise<string> => {
     try {
-        const response = await instance.delete<string>(`/todos/${id}`);
+        const response = await todosAPI.delete<string>(`/todos/${id}`);
 
-        if (response.statusText !== "OK") {
+        if (response.status !== 200) {
             throw new Error("Ошибка при загрузке данных");
         }
 

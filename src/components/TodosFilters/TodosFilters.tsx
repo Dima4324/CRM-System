@@ -7,21 +7,21 @@ interface TodosTypesProps {
     handleFilterTodo: (filter: TodosFilter) => void;
 }
 
-export const TodosTypes: React.FC<TodosTypesProps> = ({
+export const TodosFilters: React.FC<TodosTypesProps> = ({
     info,
     handleFilterTodo,
 }) => {
     const items: TabsProps["items"] = [
         {
-            key: "all",
+            key: TodosFilter.ALL,
             label: `Все (${info.all})`,
         },
         {
-            key: "inWork",
+            key: TodosFilter.IN_WORK,
             label: `В работе (${info.inWork})`,
         },
         {
-            key: "completed",
+            key: TodosFilter.COMPLETED,
             label: `Сделано (${info.completed})`,
         },
     ];
