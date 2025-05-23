@@ -1,68 +1,60 @@
-import { Form, Button, Input, notification } from "antd";
+import { Form, Button, Input, Space } from "antd";
 import { FC, memo, useState } from "react";
-import { addTodo } from "../../api/todos";
 import {
-    maxLengthInputValue,
-    minLengthInputValue,
+    maxLengthInputValues,
+    minLengthInputValues,
 } from "../../utils/constants";
-import { valuesInputForm } from "../../types/todos";
-import { FrownOutlined } from "@ant-design/icons";
-import axios from "axios";
+import { TodoRequest, valuesInputForm } from "../../types/todos";
 
-interface AddTodoProps {
-    updateTodos: () => Promise<void>;
-}
+import { useAppDispatch } from "../../hooks/redux";
+import { createTodoAction } from "../../store/actions/todoActions";
+import { useInitNotification } from "../../hooks/useNotification";
+import { CheckCircleFilled } from "@ant-design/icons";
 
 const formConfig = {
-    style: { width: "100%", justifyContent: "center", margin: "20px 0" },
+    style: { width: "100%", margin: "20px 0" },
 };
 
 const formItemConfig = {
     validateTrigger: "onSubmit",
-    style: { width: "50%" },
+    style: { width: "50%", margin: "0" },
     rules: [
         { required: true, message: "Поле не должно быть пустым" },
         {
-            min: minLengthInputValue,
-            message: `Минимальная длина ${minLengthInputValue} символа`,
+            min: minLengthInputValues.two,
+            message: `Минимальная длина ${minLengthInputValues.two} символа`,
         },
         {
-            max: maxLengthInputValue,
-            message: `Максимальная длина ${maxLengthInputValue} символа`,
+            max: maxLengthInputValues.sixtyFour,
+            message: `Максимальная длина ${maxLengthInputValues.sixtyFour} символа`,
         },
     ],
 };
 
-export const AddTodo: FC<AddTodoProps> = memo(({ updateTodos }) => {
+export const AddTodo: FC = memo(() => {
     const [isLoading, setIsLoading] = useState(false);
     const [form] = Form.useForm();
 
-    const [api, contextHolder] = notification.useNotification();
+    const dispatch = useAppDispatch();
 
-    const openNotification = (errorType: string, errorMessage: string) => {
-        api.error({
-            message: errorType,
-            description: errorMessage,
-            icon: <FrownOutlined style={{ color: "#ff0e0e" }} />,
-        });
-    };
+    const { openNotification, contextHolder } = useInitNotification();
 
     const handleAddTodo = async (values: valuesInputForm) => {
         try {
             setIsLoading(true);
-
-            const bodyRequest = {
+            const bodyRequest: TodoRequest = {
                 title: values.title,
                 isDone: false,
             };
-
-            await addTodo(bodyRequest);
-            await updateTodos();
-            form.resetFields()
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                openNotification("Ошибка", error.message);
-            }
+            await dispatch(createTodoAction(bodyRequest)).unwrap();
+            openNotification(
+               { message: "Задача успешно добавлена",
+                component: <CheckCircleFilled style={{ color: "green" }} />}
+            );
+            form.resetFields();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (e) {
+            //
         } finally {
             setIsLoading(false);
         }
@@ -71,25 +63,32 @@ export const AddTodo: FC<AddTodoProps> = memo(({ updateTodos }) => {
     return (
         <>
             {contextHolder}
-            <Form form={form} layout="inline" onFinish={handleAddTodo} {...formConfig}>
-                <Form.Item name="title" {...formItemConfig}>
-                    <Input
-                        placeholder="Введите задачу..."
-                        variant="underlined"
-                        style={{ backgroundColor: "inherit" }}
-                        showCount
-                    />
-                </Form.Item>
-                <Form.Item>
-                    <Button
-                        color="primary"
-                        variant="solid"
-                        htmlType="submit"
-                        disabled={isLoading}
-                    >
-                        Добавить
-                    </Button>
-                </Form.Item>
+            <Form
+                form={form}
+                layout="inline"
+                onFinish={handleAddTodo}
+                {...formConfig}
+            >
+                    <Space.Compact style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                        <Form.Item name="title" {...formItemConfig}>
+                            <Input
+                                placeholder="Введите задачу..."
+                                variant="underlined"
+                                style={{ backgroundColor: "inherit", width: "100%" }}
+                                showCount
+                            />
+                        </Form.Item>
+                        <Form.Item style={{ margin: "0" }}>
+                            <Button
+                                color="primary"
+                                variant="solid"
+                                htmlType="submit"
+                                disabled={isLoading}
+                            >
+                                Добавить
+                            </Button>
+                        </Form.Item>
+                    </Space.Compact>
             </Form>
         </>
     );

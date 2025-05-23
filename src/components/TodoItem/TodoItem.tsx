@@ -1,4 +1,3 @@
-import { deleteTodo, updateTodo } from "../../api/todos";
 import { useState, useRef, useEffect } from "react";
 import { Todo, TodoRequest, valuesInputForm } from "../../types/todos";
 import {
@@ -9,23 +8,30 @@ import {
     Flex,
     Typography,
     Form,
-    notification,
 } from "antd";
 import {
     EditOutlined,
     DeleteOutlined,
     CheckOutlined,
     CloseOutlined,
-    FrownOutlined,
+    CheckCircleFilled,
 } from "@ant-design/icons";
 import {
-    maxLengthInputValue,
-    minLengthInputValue,
+    maxLengthInputValues,
+    minLengthInputValues,
 } from "../../utils/constants";
-import axios from "axios";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import {
+    deleteTodoAction,
+    updateTodoAction,
+} from "../../store/actions/todoActions";
+import {
+    addEditingId,
+    removeEditingId,
+} from "../../store/reducers/todos/todosPageSettingsSlice";
+import { useInitNotification } from "../../hooks/useNotification";
 
 interface TodoItemProps {
-    updateTodos: () => Promise<void>;
     todo: Todo;
 }
 
@@ -46,96 +52,88 @@ const formItemConfig = {
     rules: [
         { required: true, message: "Поле не должно быть пустым" },
         {
-            min: minLengthInputValue,
-            message: `Минимальная длина ${minLengthInputValue} символа`,
+            min: minLengthInputValues.two,
+            message: `Минимальная длина ${minLengthInputValues.two} символа`,
         },
         {
-            max: maxLengthInputValue,
-            message: `Максимальная длина ${maxLengthInputValue} символа`,
+            max: maxLengthInputValues.sixtyFour,
+            message: `Максимальная длина ${maxLengthInputValues.sixtyFour} символа`,
         },
     ],
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
+export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
+    const isLoading = useAppSelector(({ todo }) => todo.isLoading);
+    const editingTodosId = useAppSelector(
+        ({ todosPageSettings }) => todosPageSettings.editingTodosId
+    );
     const [isChecked, setIsChecked] = useState(todo.isDone);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-
     const inputRef = useRef<InputRef>(null);
 
-    const [api, contextHolder] = notification.useNotification();
+    const { openNotification, contextHolder } = useInitNotification();
 
-    const openNotification = (errorType: string, errorMessage: string) => {
-        api.error({
-            message: errorType,
-            description: errorMessage,
-            icon: <FrownOutlined style={{ color: "#ff0e0e" }} />,
-        });
-    };
+    const dispatch = useAppDispatch();
+
+    const isEditing = editingTodosId.includes(todo.id);
 
     const handleToggleIsEditing = (): void => {
-        setIsEditing(!isEditing);
+        if (isEditing) {
+            dispatch(removeEditingId(todo.id));
+        } else {
+            dispatch(addEditingId(todo.id));
+        }
     };
 
     const handleDeleteTodo = async (): Promise<void> => {
         try {
-            setIsLoading(true);
-
-            await deleteTodo(todo.id);
-            await updateTodos();
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                openNotification("Ошибка", error.message);
-            }
-        } finally {
-            setIsLoading(false);
+            await dispatch(deleteTodoAction(todo.id)).unwrap();
+            openNotification({
+                message: "Задача успешно изменена",
+                component: <CheckCircleFilled style={{ color: "green" }} />,
+            });
+        } catch {
+            //
         }
     };
 
     const handleCheckbox = async (): Promise<void> => {
+        const bodyRequest: TodoRequest = {
+            isDone: !isChecked,
+        };
         try {
-            setIsLoading(true);
-
-            const bodyRequest: TodoRequest = {
-                isDone: !isChecked,
-            };
-
-            await updateTodo(todo.id, bodyRequest);
-            await updateTodos();
-
+            await dispatch(
+                updateTodoAction({ id: todo.id, bodyRequest })
+            ).unwrap();
+            openNotification({
+                message: "Задача успешно изменена",
+                component: <CheckCircleFilled style={{ color: "green" }} />,
+            });
             setIsChecked(!isChecked);
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                openNotification("Ошибка", error.message);
-            }
-        } finally {
-            setIsLoading(false);
+        } catch {
+            //
         }
     };
 
     const handleConfirmEditTodo = async (
         values: valuesInputForm
     ): Promise<void> => {
+        const bodyRequest: TodoRequest = {
+            title: values.title,
+        };
+
         try {
-            setIsLoading(true);
-
-            const bodyRequest: TodoRequest = {
-                title: values.title,
-            };
-
-            await updateTodo(todo.id, bodyRequest);
-            await updateTodos();
-
-            handleToggleIsEditing();
-
-            setIsLoading(false);
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                openNotification("Ошибка", error.message);
-            }
-        } finally {
-            setIsLoading(false);
+            await dispatch(
+                updateTodoAction({ id: todo.id, bodyRequest })
+            ).unwrap();
+            openNotification(
+              {  message: "Задача успешно добавлена",
+                component: <CheckCircleFilled style={{ color: "green" }} />}
+            );
+        } catch {
+            //
         }
+
+        handleToggleIsEditing();
     };
 
     useEffect(() => {
@@ -149,7 +147,11 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
             {contextHolder}
             <Flex justify="space-between" align="center" {...todoItemConfig}>
                 <Flex justify="flex-start" align="center" gap="10px" flex={1}>
-                    <Checkbox onChange={handleCheckbox} checked={isChecked} disabled={isLoading}/>
+                    <Checkbox
+                        onChange={handleCheckbox}
+                        checked={isChecked}
+                        disabled={isLoading}
+                    />
                     {isEditing ? (
                         <>
                             <Form

@@ -1,16 +1,13 @@
-import { TodoInfo, TodosFilter } from "../../types/todos";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { changeFilter } from "../../store/reducers/todos/todosPageSettingsSlice";
+import { TodosFilter } from "../../types/todos";
 import { Tabs, TabsProps } from "antd";
 
-interface TodosTypesProps {
-    info: TodoInfo;
-    filter: TodosFilter;
-    handleFilterTodo: (filter: TodosFilter) => void;
-}
-
-export const TodosTypes: React.FC<TodosTypesProps> = ({
-    info,
-    handleFilterTodo,
-}) => {
+export const TodosFilters: React.FC = () => {
+    const info = useAppSelector(state => state.todo.info)
+    
+    const dispatch = useAppDispatch();
+    
     const items: TabsProps["items"] = [
         {
             key: "all",
@@ -27,7 +24,7 @@ export const TodosTypes: React.FC<TodosTypesProps> = ({
     ];
 
     const handleTabChange = (activeKey: string): void => {
-        handleFilterTodo(activeKey as TodosFilter);
+        dispatch(changeFilter(activeKey as TodosFilter));
     };
 
     return (
