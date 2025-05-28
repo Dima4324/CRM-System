@@ -21,10 +21,6 @@ export const addTodo = async (bodyRequest: TodoRequest): Promise<Todo> => {
     try {
         const response = await todosAPI.post<Todo>("/todos", bodyRequest);
 
-        if (response.status !== 200) {
-            throw new Error("Ошибка при загрузке данных");
-        }
-
         const data = response.data;
 
         return data;
@@ -39,10 +35,6 @@ export const getTodos = async (
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
     try {
         const response = await todosAPI.get<MetaResponse<Todo, TodoInfo>>(`/todos`, { params: { filter } });
-
-        if (response.status !== 200) {
-            throw new Error("Ошибка при загрузке данных");
-        }
 
         const data = response.data;
 
@@ -61,10 +53,6 @@ export const updateTodo = async (
     try {
         const response = await todosAPI.put<Todo>(`/todos/${id}`, bodyRequest);
 
-        if (response.status !== 200) {
-            throw new Error("Ошибка при загрузке данных");
-        }
-
         const data = response.data;
 
         return data;
@@ -77,10 +65,6 @@ export const updateTodo = async (
 export const deleteTodo = async (id: number): Promise<string> => {
     try {
         const response = await todosAPI.delete<string>(`/todos/${id}`);
-
-        if (response.status !== 200) {
-            throw new Error("Ошибка при загрузке данных");
-        }
 
         const data = response.data;
 

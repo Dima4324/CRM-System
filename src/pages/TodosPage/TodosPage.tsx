@@ -15,6 +15,7 @@ export const TodosPage = () => {
     });
     const [filter, setFilter] = useState<TodosFilter>(TodosFilter.ALL);
     const [isLoading, setIsloading] = useState(false);
+    const [editingTodoId, setEditingTodoId] = useState<number | null>(null);
 
     const [api, contextHolder] = notification.useNotification();
 
@@ -31,6 +32,10 @@ export const TodosPage = () => {
 
     const handleFilterTodo = (filter: TodosFilter): void => {
         setFilter(filter);
+    };
+
+    const handleToggleEditingId = (id: number | null): void => {
+        setEditingTodoId((prev) => (prev === id ? null : id));
     };
 
     const updateTodos = useCallback(async (): Promise<void> => {
@@ -58,14 +63,17 @@ export const TodosPage = () => {
     }, [filter, updateTodos]);
 
     useEffect(() => {
-        const interval: NodeJS.Timeout = setInterval(() => {
-            updateTodos();
-        }, 5000);
+        let interval: NodeJS.Timeout;
+        if (!editingTodoId) {
+            interval = setInterval(() => {
+                updateTodos();
+            }, 5000);
+        }
 
         return () => {
             clearInterval(interval);
         };
-    }, [updateTodos]);
+    }, [updateTodos, editingTodoId]);
 
     return (
         <>
@@ -84,6 +92,8 @@ export const TodosPage = () => {
                     updateTodos={updateTodos}
                     isLoading={isLoading}
                     todos={todos}
+                    editingTodoId={editingTodoId}
+                    handleToggleEditingId={handleToggleEditingId}
                 />
             </main>
         </>

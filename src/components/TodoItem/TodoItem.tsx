@@ -27,6 +27,8 @@ import axios from "axios";
 interface TodoItemProps {
     updateTodos: () => Promise<void>;
     todo: Todo;
+    editingTodoId: number | null;
+    handleToggleEditingId: () => void;
 }
 
 const todoItemConfig = {
@@ -56,10 +58,9 @@ const formItemConfig = {
     ],
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
+export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo, editingTodoId, handleToggleEditingId }) => {
     const [isChecked, setIsChecked] = useState(todo.isDone);
     const [isLoading, setIsLoading] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
 
     const inputRef = useRef<InputRef>(null);
 
@@ -71,10 +72,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
             description: errorMessage,
             icon: <FrownOutlined style={{ color: "#ff0e0e" }} />,
         });
-    };
-
-    const handleToggleIsEditing = (): void => {
-        setIsEditing(!isEditing);
     };
 
     const handleDeleteTodo = async (): Promise<void> => {
@@ -126,7 +123,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
             await updateTodo(todo.id, bodyRequest);
             await updateTodos();
 
-            handleToggleIsEditing();
+            handleToggleEditingId();
 
             setIsLoading(false);
         } catch (error) {
@@ -139,10 +136,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
     };
 
     useEffect(() => {
-        if (isEditing) {
+        if (editingTodoId) {
             inputRef.current?.focus();
         }
-    }, [isEditing]);
+    }, [editingTodoId]);
 
     return (
         <>
@@ -150,7 +147,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
             <Flex justify="space-between" align="center" {...todoItemConfig}>
                 <Flex justify="flex-start" align="center" gap="10px" flex={1}>
                     <Checkbox onChange={handleCheckbox} checked={isChecked} disabled={isLoading}/>
-                    {isEditing ? (
+                    {todo.id === editingTodoId ? (
                         <>
                             <Form
                                 style={{
@@ -184,7 +181,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
                                         color="danger"
                                         variant="solid"
                                         icon={<CloseOutlined />}
-                                        onClick={handleToggleIsEditing}
+                                        onClick={handleToggleEditingId}
                                         disabled={isLoading}
                                     />
                                 </Flex>
@@ -204,7 +201,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo }) => {
                                     size="large"
                                     type="primary"
                                     icon={<EditOutlined />}
-                                    onClick={handleToggleIsEditing}
+                                    onClick={handleToggleEditingId}
                                     disabled={isLoading}
                                 />
                                 <Button

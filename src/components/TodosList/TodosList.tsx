@@ -7,6 +7,8 @@ interface TodosListProps {
   updateTodos: () => Promise<void>;
   isLoading: boolean;
   todos: Todo[];
+  editingTodoId: number | null;
+  handleToggleEditingId: (id: number | null) => void;
 }
 
 const flexConfig = {
@@ -20,6 +22,8 @@ export const TodosList: React.FC<TodosListProps> = ({
   updateTodos,
   isLoading,
   todos,
+  editingTodoId,
+  handleToggleEditingId,
 }) => {
   return (
     <Flex {...flexConfig}>
@@ -35,7 +39,9 @@ export const TodosList: React.FC<TodosListProps> = ({
           style={{ width: "57%", height: "100%" }}
           renderItem={(todo) => (
             <List.Item key={todo.id}>
-              <TodoItem updateTodos={updateTodos} todo={todo} />
+              <TodoItem updateTodos={updateTodos} todo={todo} editingTodoId={editingTodoId} handleToggleEditingId={() => editingTodoId === todo.id
+      ? handleToggleEditingId(null)
+      : handleToggleEditingId(todo.id)}/>
             </List.Item>
           )}
         />
