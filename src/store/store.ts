@@ -1,10 +1,15 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import todoReducer from "./reducers/todos/todoSlice"
-import todosPageSettingsSlice from "./reducers/todos/todosPageSettingsSlice"
+import todosPageSettingsReducer from "./reducers/todos/todosPageSettingsSlice"
+import accessTokenReducer from "./reducers/user/accessTokenSlice"
+import profileReducer from "./reducers/user/profileSlice"
+
 
 const rootReducer = combineReducers({
     todo: todoReducer,
-    todosPageSettings: todosPageSettingsSlice,
+    todosPageSettings: todosPageSettingsReducer,
+    accessToken: accessTokenReducer,
+    profile: profileReducer,
 })
 
 export const store = configureStore({

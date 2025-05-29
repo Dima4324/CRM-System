@@ -8,11 +8,10 @@ import { useInitNotification } from "../../hooks/useNotification";
 
 export const TodosPage = () => {
     const todos = useAppSelector(({ todo }) => todo.todos);
-    const error = useAppSelector((state) => state.todo.error);
-    const filter = useAppSelector((state) => state.todosPageSettings.filter);
-    const editingTodosId = useAppSelector(
-        (state) => state.todosPageSettings.editingTodosId
-    );
+    const error = useAppSelector(({todo}) => todo.error);
+    const isLoading = useAppSelector(({todo}) => todo.isLoading);
+    const filter = useAppSelector(({todosPageSettings}) => todosPageSettings.filter);
+    const editingTodosId = useAppSelector(({todosPageSettings}) => todosPageSettings.editingTodosId);
 
     const dispatch = useAppDispatch();
 
@@ -34,7 +33,7 @@ export const TodosPage = () => {
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
-        if (!editingTodosId.length) {
+        if (!editingTodosId.length && !isLoading) {
             interval = setInterval(() => {
                 dispatch(getTodosAction(filter));
             }, 5000);
@@ -42,7 +41,7 @@ export const TodosPage = () => {
         return () => {
             clearInterval(interval);
         };
-    }, [dispatch, filter, editingTodosId]);
+    }, [dispatch, filter, editingTodosId, isLoading]);
 
     return (
         <>

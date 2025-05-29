@@ -9,8 +9,8 @@ import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import { NotFoundPage } from "./pages/NotFoundPage/NotFoundPage";
 import { RegisterPage } from "./pages/RegisterPage/RegisterPage";
 import { AuthLayout } from "./components/Layouts/AuthLayout";
-import { MainAppLayout } from "./components/Layouts/MainAppLayout";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
+import { CheckAuth } from "./components/CheckAuth/CheckAuth";
 
 const router = createBrowserRouter([
     {
@@ -24,10 +24,10 @@ const router = createBrowserRouter([
     },
     {
         path: "/",
-        element: <MainAppLayout />,
+        element: <CheckAuth/>,
         children: [
-            { index: true, element: <Navigate to="todo" replace /> },
-            { path: "todo", element: <TodosPage /> },
+            { index: true, element: <Navigate to="todos" replace /> },
+            { path: "todos", element: <TodosPage /> },
             { path: "profile", element: <ProfilePage /> },
         ],
     },

@@ -16,6 +16,7 @@ import { UserRegistration } from "../../types/users";
 import { register } from "../../api/todos";
 import { useInitNotification } from "../../hooks/useNotification";
 import axios from "axios";
+import { useState } from "react";
 
 interface InputValues {
     username: string;
@@ -27,6 +28,7 @@ interface InputValues {
 }
 
 export const RegisterPage = () => {
+    const [isLoading, setIsLoading] = useState(false);
     const { contextHolder, openNotification } = useInitNotification();
 
     const onFinish = async (values: InputValues): Promise<void> => {
@@ -38,6 +40,7 @@ export const RegisterPage = () => {
             email,
             phoneNumber,
         };
+        setIsLoading(true);
         try {
             await register(userData);
             openNotification({
@@ -70,6 +73,7 @@ export const RegisterPage = () => {
                 });
             }
         }
+        setIsLoading(false);
     };
     return (
         <>
@@ -225,7 +229,7 @@ export const RegisterPage = () => {
                 </Form.Item>
                 <Form.Item
                     label="Телефон"
-                    name="phone"
+                    name="phoneNumber"
                     layout="vertical"
                     rules={[
                         {
@@ -244,6 +248,7 @@ export const RegisterPage = () => {
                         variant="solid"
                         htmlType="submit"
                         style={{ width: "100%" }}
+                        loading={isLoading}
                     >
                         Зарегистрироваться
                     </Button>

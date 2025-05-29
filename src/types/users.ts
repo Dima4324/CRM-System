@@ -16,13 +16,13 @@ export interface RefreshToken {
 }
 
 export interface Profile { 
-  id: number; 
+  id: number | null; 
   username: string; 
   email: string; 
   date: string; 
   isBlocked: boolean; 
   roles: Role[]; 
-  phoneNumber: string; 
+  phoneNumber?: string; 
 }
 
 export interface ProfileRequest { 

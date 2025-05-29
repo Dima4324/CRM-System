@@ -3,7 +3,7 @@ import { Layout, Menu, MenuProps } from "antd"
 import { Content } from "antd/es/layout/layout"
 import Sider from "antd/es/layout/Sider"
 import { useState } from "react"
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -29,13 +29,15 @@ const siderStyle: React.CSSProperties = {
 };
 
 const items: MenuItem[] | null = [
-    getItem("Профиль", "/profile", <UserOutlined />),
-    getItem("Список задач", "/", <UnorderedListOutlined />),
+    getItem("Личный кабинет", "/profile", <UserOutlined />),
+    getItem("Список задач", "/todos", <UnorderedListOutlined />),
 ];
 
 export const MainAppLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
+
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleMenuItem = (key: string) => {
         navigate(key);
@@ -49,11 +51,10 @@ export const MainAppLayout = () => {
                     collapsed={collapsed}
                     onCollapse={(value) => setCollapsed(value)}
                 >
-                    <div className="demo-logo-vertical" />
                     <Menu
                         theme="dark"
                         mode="inline"
-                        defaultSelectedKeys={["/"]}
+                        selectedKeys={[location.pathname]}
                         items={items}
                         onClick={({ key }) => handleMenuItem(key)}
                     />
