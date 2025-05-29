@@ -1,3 +1,5 @@
+import illustration from "../../assets/illustration.png";
+import logo from "../../assets/Group_1686550876.svg";
 import { Flex } from "antd";
 import { Outlet } from "react-router-dom";
 
@@ -14,7 +16,7 @@ export const AuthLayout = () => {
             >
                 <div>
                     <img
-                        src="/src/assets/illustration.png"
+                        src={illustration}
                         alt="картинка"
                         style={{ height: "100vh" }}
                     />
@@ -30,7 +32,7 @@ export const AuthLayout = () => {
                 >
                     <div style={{ width: "100%" }}>
                         <img
-                            src="/src/assets/Group_1686550876.svg"
+                            src={logo}
                             alt="картинка"
                             style={{ width: "3vw", textAlign: "left" }}
                         />
