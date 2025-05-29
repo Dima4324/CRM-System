@@ -14,11 +14,20 @@ export const AuthLayout = () => {
                     height: "100vh",
                 }}
             >
-                <div>
+                <div
+                    style={{
+                        width: "60vw", // фиксированная ширина
+                        height: "100vh", 
+                        // maxWidth: "865px",// фиксированная высота
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
                     <img
                         src={illustration}
                         alt="картинка"
-                        style={{ height: "100vh" }}
+                        style={{ height: "100%", width: "100%" }}
                     />
                 </div>
                 <div
@@ -30,11 +39,11 @@ export const AuthLayout = () => {
                         margin: "0 auto",
                     }}
                 >
-                    <div style={{ width: "100%" }}>
+                    <div style={{ width: "42px", height: "42px" }}>
                         <img
                             src={logo}
                             alt="картинка"
-                            style={{ width: "3vw", textAlign: "left" }}
+                            style={{ width: "42px", height: "42px", textAlign: "left" }}
                         />
                     </div>
                     <Outlet />
