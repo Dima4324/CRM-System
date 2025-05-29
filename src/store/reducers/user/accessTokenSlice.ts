@@ -9,7 +9,7 @@ const accessTokenSlice = createSlice({
     name: "accessToken",
     initialState,
     reducers: {
-        setToken(state, action) {
+        setToken(_state, action) {
             return action.payload;
         },
         clearToken() {
