@@ -21,7 +21,7 @@ export const TodosList: React.FC<TodosListProps> = ({ todos }) => {
     return (
         <Flex {...flexConfig}>
             {isLoading ? (
-                <Flex align="center" justify="center">
+                <Flex align="center" justify="center" style={{ height: "65vh" }}>
                     <Spin
                         indicator={<Loading3QuartersOutlined spin />}
                         size="large"

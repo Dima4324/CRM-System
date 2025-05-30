@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { MainAppLayout } from "../Layouts/MainAppLayout";
 import { refreshTokenRequest, RefreshTokenStorage } from "../../api/todos";
@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { setToken } from "../../store/reducers/user/accessTokenSlice";
 import { Flex, Spin } from "antd";
 import { Loading3QuartersOutlined } from "@ant-design/icons";
-import { getProfileInfoAction } from "../../store/actions/profileActions";
 
 export const CheckAuth = () => {
     const accessToken = useAppSelector((state) => state.accessToken);
@@ -15,12 +14,14 @@ export const CheckAuth = () => {
 
     const dispatch = useAppDispatch();
 
+    const location = useLocation();
+
     useEffect(() => {
         const checkToken = async () => {
-            if (!accessToken) {
-                const refreshTokenStorage = new RefreshTokenStorage();
-                const refreshToken = refreshTokenStorage.getToken();
-                if (refreshToken) {
+            const refreshTokenStorage = new RefreshTokenStorage();
+            const refreshToken = refreshTokenStorage.getToken();
+            if (refreshToken) {
+                if (!accessToken) {
                     try {
                         const tokens = await refreshTokenRequest({
                             refreshToken: refreshToken,
@@ -30,28 +31,22 @@ export const CheckAuth = () => {
 
                         dispatch(setToken(tokens.accessToken));
 
-                        await dispatch(
-                            getProfileInfoAction(tokens.accessToken)
-                        );
-
                         setIsAuth(true);
                     } catch {
                         setIsAuth(false);
                     }
                 } else {
-                    setIsAuth(false);
+                    setIsAuth(true);
                 }
             } else {
-                await dispatch(getProfileInfoAction(accessToken));
-                
-                setIsAuth(true);
+                setIsAuth(false);
             }
-
             setIsLoading(false);
         };
 
         checkToken();
-    }, [accessToken, dispatch]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.pathname, dispatch]);
 
     return isLoading ? (
         <Flex align="center" justify="center" style={{ height: "100vh" }}>

@@ -3,21 +3,13 @@ import { Profile } from "../../../types/users";
 import { getProfileInfoAction } from "../../actions/profileActions";
 
 interface ProfileState {
-    profileInfo: Profile;
+    profileInfo: Profile | null;
     isLoading: boolean;
     error: string;
 }
 
 const initialState: ProfileState = {
-    profileInfo: {
-        id: null,
-        username: "",
-        email: "",
-        date: "",
-        isBlocked: false,
-        roles: [],
-        phoneNumber: "",
-    },
+    profileInfo: null,
     isLoading: false,
     error: "",
 };

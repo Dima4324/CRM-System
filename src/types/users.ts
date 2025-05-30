@@ -16,7 +16,7 @@ export interface RefreshToken {
 }
 
 export interface Profile { 
-  id: number | null; 
+  id: number; 
   username: string; 
   email: string; 
   date: string; 
