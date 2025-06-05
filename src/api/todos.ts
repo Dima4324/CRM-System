@@ -9,7 +9,7 @@ import {
 
 const BASE_URL = "https://easydev.club/api/v1";
 
-const todosAPI = axios.create({
+const easydevApi = axios.create({
     baseURL: BASE_URL,
     timeout: 10000,
     headers: {
@@ -19,7 +19,7 @@ const todosAPI = axios.create({
 
 export const addTodo = async (bodyRequest: TodoRequest): Promise<Todo> => {
     try {
-        const response = await todosAPI.post<Todo>("/todos", bodyRequest);
+        const response = await easydevApi.post<Todo>("/todos", bodyRequest);
 
         const data = response.data;
 
@@ -34,7 +34,7 @@ export const getTodos = async (
     filter: TodosFilter
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
     try {
-        const response = await todosAPI.get<MetaResponse<Todo, TodoInfo>>(`/todos`, { params: { filter } });
+        const response = await easydevApi.get<MetaResponse<Todo, TodoInfo>>(`/todos`, { params: { filter } });
 
         const data = response.data;
 
@@ -51,7 +51,7 @@ export const updateTodo = async (
     bodyRequest: TodoRequest
 ): Promise<Todo> => {
     try {
-        const response = await todosAPI.put<Todo>(`/todos/${id}`, bodyRequest);
+        const response = await easydevApi.put<Todo>(`/todos/${id}`, bodyRequest);
 
         const data = response.data;
 
@@ -62,9 +62,9 @@ export const updateTodo = async (
     }
 };
 
-export const deleteTodo = async (id: number): Promise<string> => {
+export const deleteTodo = async (id: number): Promise<Todo> => {
     try {
-        const response = await todosAPI.delete<string>(`/todos/${id}`);
+        const response = await easydevApi.delete<Todo>(`/todos/${id}`);
 
         const data = response.data;
 
