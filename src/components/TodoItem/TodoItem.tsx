@@ -1,3 +1,4 @@
+import { deleteTodo, updateTodo } from "../../api/todos";
 import { useState, useRef, useEffect } from "react";
 import { Todo, TodoRequest, valuesInputForm } from "../../types/todos";
 import {
@@ -8,31 +9,23 @@ import {
     Flex,
     Typography,
     Form,
+    notification,
 } from "antd";
 import {
     EditOutlined,
     DeleteOutlined,
     CheckOutlined,
     CloseOutlined,
-    CheckCircleFilled,
+    FrownOutlined,
 } from "@ant-design/icons";
-import {
-    maxLengthInputValues,
-    minLengthInputValues,
-} from "../../utils/constants";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import {
-    deleteTodoAction,
-    updateTodoAction,
-} from "../../store/actions/todoActions";
-import {
-    addEditingId,
-    removeEditingId,
-} from "../../store/reducers/todos/todosPageSettingsSlice";
-import { useInitNotification } from "../../hooks/useNotification";
+import { maxLengthInputValues, minLengthInputValues } from "../../utils/constants";
+import axios from "axios";
 
 interface TodoItemProps {
+    updateTodos: () => Promise<void>;
     todo: Todo;
+    isEditing: boolean;
+    handleSelectEditingId: () => void;
 }
 
 const todoItemConfig = {
@@ -62,78 +55,81 @@ const formItemConfig = {
     ],
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
-    const isLoading = useAppSelector(({ todo }) => todo.isLoading);
-    const editingTodosId = useAppSelector(
-        ({ todosPageSettings }) => todosPageSettings.editingTodosId
-    );
+export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo, handleSelectEditingId, isEditing }) => {
     const [isChecked, setIsChecked] = useState(todo.isDone);
+    const [isLoading, setIsLoading] = useState(false);
+
     const inputRef = useRef<InputRef>(null);
 
-    const { openNotification, contextHolder } = useInitNotification();
+    const [api, contextHolder] = notification.useNotification();
 
-    const dispatch = useAppDispatch();
-
-    const isEditing = editingTodosId.includes(todo.id);
-
-    const handleToggleIsEditing = (): void => {
-        if (isEditing) {
-            dispatch(removeEditingId(todo.id));
-        } else {
-            dispatch(addEditingId(todo.id));
-        }
+    const openNotification = (errorType: string, errorMessage: string) => {
+        api.error({
+            message: errorType,
+            description: errorMessage,
+            icon: <FrownOutlined style={{ color: "#ff0e0e" }} />,
+        });
     };
 
     const handleDeleteTodo = async (): Promise<void> => {
         try {
-            await dispatch(deleteTodoAction(todo.id)).unwrap();
-            openNotification({
-                message: "Задача успешно изменена",
-                component: <CheckCircleFilled style={{ color: "green" }} />,
-            });
-        } catch {
-            //
+            setIsLoading(true);
+
+            await deleteTodo(todo.id);
+            await updateTodos();
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                openNotification("Ошибка", error.message);
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleCheckbox = async (): Promise<void> => {
-        const bodyRequest: TodoRequest = {
-            isDone: !isChecked,
-        };
         try {
-            await dispatch(
-                updateTodoAction({ id: todo.id, bodyRequest })
-            ).unwrap();
-            openNotification({
-                message: "Задача успешно изменена",
-                component: <CheckCircleFilled style={{ color: "green" }} />,
-            });
+            setIsLoading(true);
+
+            const bodyRequest: TodoRequest = {
+                isDone: !isChecked,
+            };
+
+            await updateTodo(todo.id, bodyRequest);
+            await updateTodos();
+
             setIsChecked(!isChecked);
-        } catch {
-            //
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                openNotification("Ошибка", error.message);
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleConfirmEditTodo = async (
         values: valuesInputForm
     ): Promise<void> => {
-        const bodyRequest: TodoRequest = {
-            title: values.title,
-        };
-
         try {
-            await dispatch(
-                updateTodoAction({ id: todo.id, bodyRequest })
-            ).unwrap();
-            openNotification(
-              {  message: "Задача успешно добавлена",
-                component: <CheckCircleFilled style={{ color: "green" }} />}
-            );
-        } catch {
-            //
-        }
+            setIsLoading(true);
 
-        handleToggleIsEditing();
+            const bodyRequest: TodoRequest = {
+                title: values.title,
+            };
+
+            await updateTodo(todo.id, bodyRequest);
+            await updateTodos();
+
+            handleSelectEditingId();
+
+            setIsLoading(false);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                openNotification("Ошибка", error.message);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -147,11 +143,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
             {contextHolder}
             <Flex justify="space-between" align="center" {...todoItemConfig}>
                 <Flex justify="flex-start" align="center" gap="10px" flex={1}>
-                    <Checkbox
-                        onChange={handleCheckbox}
-                        checked={isChecked}
-                        disabled={isLoading}
-                    />
+                    <Checkbox onChange={handleCheckbox} checked={isChecked} disabled={isLoading}/>
                     {isEditing ? (
                         <>
                             <Form
@@ -186,7 +178,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
                                         color="danger"
                                         variant="solid"
                                         icon={<CloseOutlined />}
-                                        onClick={handleToggleIsEditing}
+                                        onClick={handleSelectEditingId}
                                         disabled={isLoading}
                                     />
                                 </Flex>
@@ -206,7 +198,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
                                     size="large"
                                     type="primary"
                                     icon={<EditOutlined />}
-                                    onClick={handleToggleIsEditing}
+                                    onClick={handleSelectEditingId}
                                     disabled={isLoading}
                                 />
                                 <Button

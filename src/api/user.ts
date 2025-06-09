@@ -30,8 +30,8 @@ class TokensStorage {
     }
 
     public deleteTokens() {
-        this.accessToken = "";
-        this.refreshToken = "";
+        this._accessToken = "";
+        this._refreshToken = "";
         localStorage.removeItem("refreshToken");
     }
 }

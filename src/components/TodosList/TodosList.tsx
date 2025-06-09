@@ -2,10 +2,13 @@ import { TodoItem } from "../TodoItem/TodoItem";
 import { Flex, List, Spin, Typography } from "antd";
 import { Todo } from "../../types/todos";
 import { Loading3QuartersOutlined } from "@ant-design/icons";
-import { useAppSelector } from "../../hooks/redux";
 
 interface TodosListProps {
+    updateTodos: () => Promise<void>;
+    isLoading: boolean;
     todos: Todo[];
+    editingTodoId: number | null; // обязательно!
+    selectEditingTodo: (id: number | null) => void;
 }
 
 const flexConfig = {
@@ -15,13 +18,22 @@ const flexConfig = {
     gap: "20px",
 };
 
-export const TodosList: React.FC<TodosListProps> = ({ todos }) => {
-    const isLoading = useAppSelector((state) => state.todo.isLoading);
+export const TodosList: React.FC<TodosListProps> = ({
+    updateTodos,
+    isLoading,
+    todos,
+    selectEditingTodo,
+    editingTodoId,
+}) => {
+
+    const handleSelectEditingId = (todoId: number): void => {
+      selectEditingTodo(editingTodoId === todoId ? null : todoId);
+    }
 
     return (
         <Flex {...flexConfig}>
             {isLoading ? (
-                <Flex align="center" justify="center" style={{ height: "65vh" }}>
+                <Flex align="center" justify="center">
                     <Spin
                         indicator={<Loading3QuartersOutlined spin />}
                         size="large"
@@ -35,7 +47,12 @@ export const TodosList: React.FC<TodosListProps> = ({ todos }) => {
                     style={{ width: "57%", height: "100%" }}
                     renderItem={(todo) => (
                         <List.Item key={todo.id}>
-                            <TodoItem todo={todo} />
+                            <TodoItem
+                                updateTodos={updateTodos}
+                                todo={todo}
+                                isEditing={editingTodoId === todo.id}
+                                handleSelectEditingId={() => handleSelectEditingId(todo.id)}
+                            />
                         </List.Item>
                     )}
                 />

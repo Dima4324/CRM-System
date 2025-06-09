@@ -24,11 +24,10 @@ export interface MetaResponse<T, N> {
   };
 }
 
-export type TodosFilter = "all" | "completed" | "inWork";
-
-
-export const isTodosFilter = (filter: string | undefined): filter is TodosFilter => {
-  return filter === "all" || filter === "completed" || filter === "inWork";
+export enum TodosFilter {
+  ALL = "all",
+  COMPLETED = "completed",
+  IN_WORK = "inWork",
 }
 
 export interface valuesInputForm {

@@ -1,47 +1,82 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AddTodo, TodosList, TodosFilters } from "../../components";
-import { Typography } from "antd";
+import { getTodos } from "../../api/todos";
+import { Todo, TodoInfo, TodosFilter } from "../../types/todos";
+import { Typography, notification } from "antd";
 import { FrownOutlined } from "@ant-design/icons";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { getTodosAction } from "../../store/actions/todoActions";
-import { useInitNotification } from "../../hooks/useNotification";
+import axios from "axios";
 
 export const TodosPage = () => {
-    const todos = useAppSelector(({ todo }) => todo.todos);
-    const error = useAppSelector(({todo}) => todo.error);
-    const isLoading = useAppSelector(({todo}) => todo.isLoading);
-    const filter = useAppSelector(({todosPageSettings}) => todosPageSettings.filter);
-    const editingTodosId = useAppSelector(({todosPageSettings}) => todosPageSettings.editingTodosId);
+    const [todos, setTodos] = useState<Todo[]>([]);
+    const [info, setInfo] = useState<TodoInfo>({
+        all: 0,
+        completed: 0,
+        inWork: 0,
+    });
+    const [filter, setFilter] = useState<TodosFilter>(TodosFilter.ALL);
+    const [isLoading, setIsloading] = useState(false);
+    const [editingTodoId, setEditingTodoId] = useState<number | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
 
-    const dispatch = useAppDispatch();
+    const [api, contextHolder] = notification.useNotification();
 
-    const { openNotification, contextHolder } = useInitNotification();
-
-    useEffect(() => {
-        dispatch(getTodosAction(filter));
-    }, [filter, dispatch]);
-
-    useEffect(() => {
-        if (error) {
-            openNotification({
-                message: "Ошибка",
-                component: <FrownOutlined style={{ color: "#ff0e0e" }} />,
-                description: error,
+    const openNotification = useCallback(
+        (errorType: string, errorMessage: string) => {
+            api.error({
+                message: errorType,
+                description: errorMessage,
+                icon: <FrownOutlined style={{ color: "#ff0e0e" }} />,
             });
+        },
+        [api]
+    );
+
+    const handleFilterTodo = (filter: TodosFilter): void => {
+        setFilter(filter);
+    };
+
+    const selectEditingTodo = (id: number | null) => {
+        const nextId = editingTodoId === id ? null : id;
+        setEditingTodoId(nextId);
+        setIsEditing(nextId !== null);
+    };
+
+    const updateTodos = useCallback(async (): Promise<void> => {
+        try {
+            setIsloading(true);
+
+            const todos = await getTodos(filter);
+
+            setTodos(todos.data);
+
+            if (todos.info) {
+                setInfo(todos.info);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                openNotification("Ошибка", error.message);
+            }
+        } finally {
+            setIsloading(false);
         }
-    }, [error, openNotification]);
+    }, [filter, openNotification]);
+
+    useEffect(() => {
+        updateTodos();
+    }, [filter, updateTodos]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
-        if (!editingTodosId.length && !isLoading) {
+        if (!isEditing) {
             interval = setInterval(() => {
-                dispatch(getTodosAction(filter));
+                updateTodos();
             }, 5000);
         }
+
         return () => {
             clearInterval(interval);
         };
-    }, [dispatch, filter, editingTodosId, isLoading]);
+    }, [updateTodos, isEditing]);
 
     return (
         <>
@@ -50,9 +85,19 @@ export const TodosPage = () => {
                 <Typography.Title level={2} style={{ textAlign: "center" }}>
                     Список задач
                 </Typography.Title>
-                <AddTodo />
-                <TodosFilters />
-                <TodosList todos={todos} />
+                <AddTodo updateTodos={updateTodos} />
+                <TodosFilters
+                    info={info}
+                    filter={filter}
+                    handleFilterTodo={handleFilterTodo}
+                />
+                <TodosList
+                    updateTodos={updateTodos}
+                    isLoading={isLoading}
+                    todos={todos}
+                    editingTodoId={editingTodoId}
+                    selectEditingTodo={selectEditingTodo}
+                />
             </main>
         </>
     );

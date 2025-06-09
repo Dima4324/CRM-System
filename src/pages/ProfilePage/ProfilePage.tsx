@@ -1,9 +1,8 @@
 import { Button, Descriptions, DescriptionsProps, Flex, Spin, Typography } from "antd";
-import { logout, tokensStorage } from "../../api/user";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { getProfileInfoAction } from "../../store/actions/profileActions";
+import { getProfileInfoAction, logoutAction } from "../../store/actions/profileActions";
 import { useInitNotification } from "../../hooks/useNotification";
 import { FrownOutlined, Loading3QuartersOutlined } from "@ant-design/icons";
 
@@ -16,11 +15,20 @@ export const ProfilePage = () => {
     const { contextHolder, openNotification } = useInitNotification();
 
     const handleLogout = async () => {
-        await logout();
-        tokensStorage.deleteTokens();
-        navigate("/auth");
+        try {
+            await dispatch(logoutAction()).unwrap();
+            navigate("/auth");
+        } catch (error) {
+            openNotification({
+                message: "Ошибка",
+                component: <FrownOutlined style={{ color: "#ff0e0e" }} />,
+                description: error as string,
+                placement: "topRight",
+            });
+        }
     };
 
+    
     useEffect(() => {
         const setProfileInfo = async () => {
             try {
@@ -36,8 +44,10 @@ export const ProfilePage = () => {
                 });
             }
         };
+
         setProfileInfo();
-    }, [dispatch, profile, openNotification]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch]);
 
     const items: DescriptionsProps["items"] = [
         {

@@ -1,30 +1,33 @@
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { changeFilter } from "../../store/reducers/todos/todosPageSettingsSlice";
-import { TodosFilter } from "../../types/todos";
+import { TodoInfo, TodosFilter } from "../../types/todos";
 import { Tabs, TabsProps } from "antd";
 
-export const TodosFilters: React.FC = () => {
-    const info = useAppSelector(state => state.todo.info)
-    
-    const dispatch = useAppDispatch();
-    
+interface TodosTypesProps {
+    info: TodoInfo;
+    filter: TodosFilter;
+    handleFilterTodo: (filter: TodosFilter) => void;
+}
+
+export const TodosFilters: React.FC<TodosTypesProps> = ({
+    info,
+    handleFilterTodo,
+}) => {
     const items: TabsProps["items"] = [
         {
-            key: "all",
+            key: TodosFilter.ALL,
             label: `Все (${info.all})`,
         },
         {
-            key: "inWork",
+            key: TodosFilter.IN_WORK,
             label: `В работе (${info.inWork})`,
         },
         {
-            key: "completed",
+            key: TodosFilter.COMPLETED,
             label: `Сделано (${info.completed})`,
         },
     ];
 
     const handleTabChange = (activeKey: string): void => {
-        dispatch(changeFilter(activeKey as TodosFilter));
+        handleFilterTodo(activeKey as TodosFilter);
     };
 
     return (

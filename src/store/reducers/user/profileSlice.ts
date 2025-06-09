@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Profile } from "../../../types/users";
-import { getProfileInfoAction } from "../../actions/profileActions";
+import { getProfileInfoAction, logoutAction } from "../../actions/profileActions";
 
 interface ProfileState {
     profileInfo: Profile | null;
@@ -29,6 +29,18 @@ const profileSlice = createSlice({
                 state.profileInfo = action.payload;
             })
             .addCase(getProfileInfoAction.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(logoutAction.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(logoutAction.fulfilled, (state) => {
+                state.isLoading = false;
+                state.error = "";
+                state.profileInfo = null;
+            })
+            .addCase(logoutAction.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
             });
