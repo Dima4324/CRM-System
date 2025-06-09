@@ -8,7 +8,7 @@ interface TodosListProps {
     isLoading: boolean;
     todos: Todo[];
     editingTodoId: number | null; // обязательно!
-    toggleEditingId: (id: number | null) => void;
+    selectEditingTodo: (id: number | null) => void;
 }
 
 const flexConfig = {
@@ -22,12 +22,12 @@ export const TodosList: React.FC<TodosListProps> = ({
     updateTodos,
     isLoading,
     todos,
-    toggleEditingId,
+    selectEditingTodo,
     editingTodoId,
 }) => {
 
-    const handleToggleEditingId = (todoId: number): void => {
-      toggleEditingId(editingTodoId === todoId ? null : todoId);
+    const handleSelectEditingId = (todoId: number): void => {
+      selectEditingTodo(editingTodoId === todoId ? null : todoId);
     }
 
     return (
@@ -51,7 +51,7 @@ export const TodosList: React.FC<TodosListProps> = ({
                                 updateTodos={updateTodos}
                                 todo={todo}
                                 isEditing={editingTodoId === todo.id}
-                                handleToggleEditingId={() => handleToggleEditingId(todo.id)}
+                                handleSelectEditingId={() => handleSelectEditingId(todo.id)}
                             />
                         </List.Item>
                     )}

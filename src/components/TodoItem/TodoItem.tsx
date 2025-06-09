@@ -28,7 +28,7 @@ interface TodoItemProps {
     updateTodos: () => Promise<void>;
     todo: Todo;
     isEditing: boolean;
-    handleToggleEditingId: () => void;
+    handleSelectEditingId: () => void;
 }
 
 const todoItemConfig = {
@@ -58,7 +58,7 @@ const formItemConfig = {
     ],
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo, handleToggleEditingId, isEditing }) => {
+export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo, handleSelectEditingId, isEditing }) => {
     const [isChecked, setIsChecked] = useState(todo.isDone);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -123,7 +123,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo, handleTog
             await updateTodo(todo.id, bodyRequest);
             await updateTodos();
 
-            handleToggleEditingId();
+            handleSelectEditingId();
 
             setIsLoading(false);
         } catch (error) {
@@ -181,7 +181,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo, handleTog
                                         color="danger"
                                         variant="solid"
                                         icon={<CloseOutlined />}
-                                        onClick={handleToggleEditingId}
+                                        onClick={handleSelectEditingId}
                                         disabled={isLoading}
                                     />
                                 </Flex>
@@ -201,7 +201,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ updateTodos, todo, handleTog
                                     size="large"
                                     type="primary"
                                     icon={<EditOutlined />}
-                                    onClick={handleToggleEditingId}
+                                    onClick={handleSelectEditingId}
                                     disabled={isLoading}
                                 />
                                 <Button

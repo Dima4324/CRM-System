@@ -35,12 +35,10 @@ export const TodosPage = () => {
         setFilter(filter);
     };
 
-    const toggleEditingId = (id: number | null) => {
-        setEditingTodoId((prev) => {
-            const nextId = prev === id ? null : id;
-            setIsEditing(nextId !== null);
-            return nextId;
-        });
+    const selectEditingTodo = (id: number | null) => {
+        const nextId = editingTodoId === id ? null : id;
+        setEditingTodoId(nextId);
+        setIsEditing(nextId !== null);
     };
 
     const updateTodos = useCallback(async (): Promise<void> => {
@@ -98,7 +96,7 @@ export const TodosPage = () => {
                     isLoading={isLoading}
                     todos={todos}
                     editingTodoId={editingTodoId}
-                    toggleEditingId={toggleEditingId}
+                    selectEditingTodo={selectEditingTodo}
                 />
             </main>
         </>
