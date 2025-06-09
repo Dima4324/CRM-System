@@ -30,6 +30,13 @@ export enum TodosFilter {
   IN_WORK = "inWork",
 }
 
+// export type TodosFilter = "all" | "completed" | "inWork";
+
+
+// export const isTodosFilter = (filter: string | undefined): filter is TodosFilter => {
+//   return filter === "all" || filter === "completed" || filter === "inWork";
+// }
+
 export interface valuesInputForm {
   title: string
 }

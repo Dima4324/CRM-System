@@ -7,8 +7,6 @@ import {
 } from "../types/todos";
 import { easydevApi } from "./easydevApi";
 
-
-
 export const addTodo = async (bodyRequest: TodoRequest): Promise<Todo> => {
     try {
         const response = await easydevApi.post<Todo>("/todos", bodyRequest);
@@ -56,9 +54,9 @@ export const updateTodo = async (
     }
 };
 
-export const deleteTodo = async (id: number): Promise<string> => {
+export const deleteTodo = async (id: number): Promise<Todo> => {
     try {
-        const response = await easydevApi.delete<string>(`/todos/${id}`);
+        const response = await easydevApi.delete<Todo>(`/todos/${id}`);
 
         const data = response.data;
 
