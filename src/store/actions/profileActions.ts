@@ -1,15 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Profile } from "../../types/users";
-import { getProfileInfo } from "../../api/todos";
+import { getProfileInfo } from "../../api/user";
 import axios from "axios";
 
 export const getProfileInfoAction = createAsyncThunk<
     Profile,
-    string,
+    void,
     { rejectValue: string }
->("user/getProfileInfoAction", async (accessToken, thunkAPI) => {
+>("user/getProfileInfoAction", async (_, thunkAPI) => {
     try {
-        const profile = await getProfileInfo(accessToken);
+        const profile = await getProfileInfo();
 
         return profile;
     } catch (error) {

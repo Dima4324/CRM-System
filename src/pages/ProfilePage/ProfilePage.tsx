@@ -1,7 +1,6 @@
 import { Button, Descriptions, DescriptionsProps, Flex, Spin, Typography } from "antd";
-import { logout, RefreshTokenStorage } from "../../api/todos";
+import { logout, tokensStorage } from "../../api/user";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { clearToken } from "../../store/reducers/user/accessTokenSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { getProfileInfoAction } from "../../store/actions/profileActions";
@@ -9,7 +8,6 @@ import { useInitNotification } from "../../hooks/useNotification";
 import { FrownOutlined, Loading3QuartersOutlined } from "@ant-design/icons";
 
 export const ProfilePage = () => {
-    const accessToken = useAppSelector((state) => state.accessToken);
     const profile = useAppSelector((state) => state.profile.profileInfo);
     const isLoading = useAppSelector((state) => state.profile.isLoading);
 
@@ -18,10 +16,8 @@ export const ProfilePage = () => {
     const { contextHolder, openNotification } = useInitNotification();
 
     const handleLogout = async () => {
-        await logout(accessToken);
-        dispatch(clearToken());
-        const refreshTokenStorage = new RefreshTokenStorage();
-        refreshTokenStorage.deleteToken();
+        await logout();
+        tokensStorage.deleteTokens();
         navigate("/auth");
     };
 
@@ -29,7 +25,7 @@ export const ProfilePage = () => {
         const setProfileInfo = async () => {
             try {
                 if (!profile) {
-                    await dispatch(getProfileInfoAction(accessToken)).unwrap();
+                    await dispatch(getProfileInfoAction()).unwrap();
                 }
             } catch (error) {
                 openNotification({
@@ -41,7 +37,7 @@ export const ProfilePage = () => {
             }
         };
         setProfileInfo();
-    }, [dispatch, profile, accessToken, openNotification]);
+    }, [dispatch, profile, openNotification]);
 
     const items: DescriptionsProps["items"] = [
         {

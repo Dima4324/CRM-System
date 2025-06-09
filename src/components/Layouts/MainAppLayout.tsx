@@ -59,11 +59,9 @@ export const MainAppLayout = () => {
                         onClick={({ key }) => handleMenuItem(key)}
                     />
                 </Sider>
-            <Layout style={{ height: "100%" }}>
                 <Content>
                     <Outlet/>
                 </Content>
-            </Layout>
         </Layout>
     )
 }

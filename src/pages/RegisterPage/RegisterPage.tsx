@@ -13,7 +13,7 @@ import {
     minLengthInputValues,
 } from "../../utils/constants";
 import { UserRegistration } from "../../types/users";
-import { register } from "../../api/todos";
+import { register } from "../../api/user";
 import { useInitNotification } from "../../hooks/useNotification";
 import axios from "axios";
 import { useState } from "react";

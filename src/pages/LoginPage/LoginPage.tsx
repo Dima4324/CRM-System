@@ -1,9 +1,7 @@
 import { FrownOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { login, RefreshTokenStorage } from "../../api/todos";
-import { useAppDispatch } from "../../hooks/redux";
-import { setToken } from "../../store/reducers/user/accessTokenSlice";
+import { login, tokensStorage } from "../../api/user";
 import { useInitNotification } from "../../hooks/useNotification";
 import axios from "axios";
 import { useState } from "react";
@@ -16,7 +14,6 @@ interface InputValues {
 export const LoginPage = () => {
     const [isLoading, setIsLoading] = useState(false);
 
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { contextHolder, openNotification } = useInitNotification();
 
@@ -24,11 +21,8 @@ export const LoginPage = () => {
         setIsLoading(true);
         try {
             const tokens = await login(values);
-            dispatch(setToken(tokens.accessToken));
-            const refreshTokenStorage = new RefreshTokenStorage(
-                tokens.refreshToken
-            );
-            refreshTokenStorage.setToken();
+            tokensStorage.accessToken = tokens.accessToken;
+            tokensStorage.refreshToken = tokens.refreshToken;
             navigate("/");
         } catch (error) {
             console.error("Ошибка входа:", error);
