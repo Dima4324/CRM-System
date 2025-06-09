@@ -1,67 +1,96 @@
-import style from "./AddTodo.module.scss";
-import { Button } from "../Button/Button";
-import { FC, useState } from "react";
+import { Form, Button, Input, notification } from "antd";
+import { FC, memo, useState } from "react";
 import { addTodo } from "../../api/todos";
-import { Input } from "../Input/Input";
+import {
+    maxLengthInputValue,
+    minLengthInputValue,
+} from "../../utils/constants";
+import { valuesInputForm } from "../../types/todos";
+import { FrownOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 interface AddTodoProps {
-  updateTodos: () => Promise<void>;
+    updateTodos: () => Promise<void>;
 }
 
-export const AddTodo: FC<AddTodoProps> = ({ updateTodos }) => {
-  const [inputValue, setInputValue] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+const formConfig = {
+    style: { width: "100%", justifyContent: "center", margin: "20px 0" },
+};
 
-  const onChangeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
+const formItemConfig = {
+    validateTrigger: "onSubmit",
+    style: { width: "50%" },
+    rules: [
+        { required: true, message: "Поле не должно быть пустым" },
+        {
+            min: minLengthInputValue,
+            message: `Минимальная длина ${minLengthInputValue} символа`,
+        },
+        {
+            max: maxLengthInputValue,
+            message: `Максимальная длина ${maxLengthInputValue} символа`,
+        },
+    ],
+};
 
-  const handleAddTodo = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+export const AddTodo: FC<AddTodoProps> = memo(({ updateTodos }) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [form] = Form.useForm();
 
-    if (inputValue.length < 2) {
-      setError("Минимальная длина 2 символа");
-      return;
-    } else if (inputValue.length > 64) {
-      setError("Максимальная длина 64 символа");
-      return;
-    }
+    const [api, contextHolder] = notification.useNotification();
 
-    setIsLoading(true);
-
-    const bodyRequest = {
-      title: inputValue,
-      isDone: false,
+    const openNotification = (errorType: string, errorMessage: string) => {
+        api.error({
+            message: errorType,
+            description: errorMessage,
+            icon: <FrownOutlined style={{ color: "#ff0e0e" }} />,
+        });
     };
 
-    await addTodo(bodyRequest);
-    await updateTodos();
+    const handleAddTodo = async (values: valuesInputForm) => {
+        try {
+            setIsLoading(true);
 
-    setInputValue("");
-    setError("");
+            const bodyRequest = {
+                title: values.title,
+                isDone: false,
+            };
 
-    setIsLoading(false);
-  };
+            await addTodo(bodyRequest);
+            await updateTodos();
+            form.resetFields()
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                openNotification("Ошибка", error.message);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  return (
-    <form className={style.addTodoForm} onSubmit={handleAddTodo}>
-      <div className={style.inputContainer}>
-        <Input
-          type="text"
-          name="title"
-          placeholder="Введите задачу..."
-          value={inputValue}
-          className={style.input}
-          onChange={onChangeInputValue}
-          min={2}
-          max={64}
-        />
-        {error && <p className={style.errorMessage}>{error}</p>}
-      </div>
-      <Button className={style.button} disabled={isLoading}>
-        Добавить
-      </Button>
-    </form>
-  );
-};
+    return (
+        <>
+            {contextHolder}
+            <Form form={form} layout="inline" onFinish={handleAddTodo} {...formConfig}>
+                <Form.Item name="title" {...formItemConfig}>
+                    <Input
+                        placeholder="Введите задачу..."
+                        variant="underlined"
+                        style={{ backgroundColor: "inherit" }}
+                        showCount
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Button
+                        color="primary"
+                        variant="solid"
+                        htmlType="submit"
+                        disabled={isLoading}
+                    >
+                        Добавить
+                    </Button>
+                </Form.Item>
+            </Form>
+        </>
+    );
+});
