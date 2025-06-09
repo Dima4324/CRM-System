@@ -16,9 +16,8 @@ export const AuthLayout = () => {
             >
                 <div
                     style={{
-                        width: "60vw", // фиксированная ширина
+                        width: "60vw",
                         height: "100vh", 
-                        // maxWidth: "865px",// фиксированная высота
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
