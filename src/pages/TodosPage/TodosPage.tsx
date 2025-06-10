@@ -67,7 +67,7 @@ export const TodosPage = () => {
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
-        if (!isEditing) {
+        if (!isEditing && !isLoading) {
             interval = setInterval(() => {
                 updateTodos();
             }, 5000);
@@ -76,7 +76,7 @@ export const TodosPage = () => {
         return () => {
             clearInterval(interval);
         };
-    }, [updateTodos, isEditing]);
+    }, [updateTodos, isEditing, isLoading]);
 
     return (
         <>
