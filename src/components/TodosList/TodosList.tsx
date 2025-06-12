@@ -7,7 +7,7 @@ interface TodosListProps {
     updateTodos: () => Promise<void>;
     isLoading: boolean;
     todos: Todo[];
-    editingTodoId: number | null; // обязательно!
+    editingTodoId: number | null;
     selectEditingTodo: (id: number | null) => void;
 }
 

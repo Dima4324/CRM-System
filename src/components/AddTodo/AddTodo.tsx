@@ -2,8 +2,8 @@ import { Form, Button, Input, notification } from "antd";
 import { FC, memo, useState } from "react";
 import { addTodo } from "../../api/todos";
 import {
-    maxLengthInputValue,
-    minLengthInputValue,
+    maxLengthInputValues,
+    minLengthInputValues,
 } from "../../utils/constants";
 import { valuesInputForm } from "../../types/todos";
 import { FrownOutlined } from "@ant-design/icons";
@@ -23,12 +23,12 @@ const formItemConfig = {
     rules: [
         { required: true, message: "Поле не должно быть пустым" },
         {
-            min: minLengthInputValue,
-            message: `Минимальная длина ${minLengthInputValue} символа`,
+            min: minLengthInputValues.two,
+            message: `Минимальная длина ${minLengthInputValues.two} символа`,
         },
         {
-            max: maxLengthInputValue,
-            message: `Максимальная длина ${maxLengthInputValue} символа`,
+            max: maxLengthInputValues.sixtyFour,
+            message: `Максимальная длина ${maxLengthInputValues.sixtyFour} символа`,
         },
     ],
 };

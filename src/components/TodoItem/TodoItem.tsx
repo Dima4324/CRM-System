@@ -18,10 +18,7 @@ import {
     CloseOutlined,
     FrownOutlined,
 } from "@ant-design/icons";
-import {
-    maxLengthInputValue,
-    minLengthInputValue,
-} from "../../utils/constants";
+import { maxLengthInputValues, minLengthInputValues } from "../../utils/constants";
 import axios from "axios";
 
 interface TodoItemProps {
@@ -48,12 +45,12 @@ const formItemConfig = {
     rules: [
         { required: true, message: "Поле не должно быть пустым" },
         {
-            min: minLengthInputValue,
-            message: `Минимальная длина ${minLengthInputValue} символа`,
+            min: minLengthInputValues.two,
+            message: `Минимальная длина ${minLengthInputValues.two} символа`,
         },
         {
-            max: maxLengthInputValue,
-            message: `Максимальная длина ${maxLengthInputValue} символа`,
+            max: maxLengthInputValues.sixtyFour,
+            message: `Максимальная длина ${maxLengthInputValues.sixtyFour} символа`,
         },
     ],
 };

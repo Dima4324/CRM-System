@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
     Todo,
     TodoInfo,
@@ -6,16 +5,7 @@ import {
     TodoRequest,
     TodosFilter,
 } from "../types/todos";
-
-const BASE_URL = "https://easydev.club/api/v1";
-
-const easydevApi = axios.create({
-    baseURL: BASE_URL,
-    timeout: 10000,
-    headers: {
-        "Content-type": "application/json; charset=UTF-8",
-    },
-});
+import { easydevApi } from "./easydevApi";
 
 export const addTodo = async (bodyRequest: TodoRequest): Promise<Todo> => {
     try {
@@ -34,14 +24,16 @@ export const getTodos = async (
     filter: TodosFilter
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
     try {
-        const response = await easydevApi.get<MetaResponse<Todo, TodoInfo>>(`/todos`, { params: { filter } });
+        const response = await easydevApi.get<MetaResponse<Todo, TodoInfo>>(
+            `/todos`,
+            { params: { filter } }
+        );
 
         const data = response.data;
 
         return data;
     } catch (error) {
         console.error("Ошибка:", error);
-
         throw error;
     }
 };
