@@ -11,6 +11,8 @@ import { RegisterPage } from "./pages/RegisterPage/RegisterPage";
 import { AuthLayout } from "./components/Layouts/AuthLayout";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
 import { CheckAuth } from "./components/CheckAuth/CheckAuth";
+import { UsersListPage } from "./pages/UsersListPage/UsersListPage";
+import { UserProfilePage } from "./pages/UserProfilePage/UserProfilePage";
 
 const router = createBrowserRouter([
     {
@@ -24,23 +26,27 @@ const router = createBrowserRouter([
     },
     {
         path: "/",
-        element: <CheckAuth/>,
+        element: <CheckAuth />,
         children: [
             { index: true, element: <Navigate to="todos" replace /> },
             { path: "todos", element: <TodosPage /> },
             { path: "profile", element: <ProfilePage /> },
+            { path: "users", element: <UsersListPage />},
+            { path: "users/:id", element: <UserProfilePage /> },
         ],
     },
     {
+        path: "not-found",
+        element: <NotFoundPage />,
+    },
+    {
         path: "*",
-        element: (
-            <NotFoundPage/>
-        ),
+        element: <NotFoundPage />,
     },
 ]);
 
 const App = () => {
     return <RouterProvider router={router} />;
-}
+};
 
 export default App;

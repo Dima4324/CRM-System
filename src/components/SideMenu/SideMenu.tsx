@@ -1,8 +1,14 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { Menu, MenuProps } from "antd";
 import Sider from "antd/es/layout/Sider";
-import { useNavigate } from 'react-router-dom';
-import { UnorderedListOutlined, UserOutlined } from '@ant-design/icons';
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+    TeamOutlined,
+    UnorderedListOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
+import { useAppSelector } from "../../hooks/redux";
+import { Roles } from "../../types/admin";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -27,18 +33,25 @@ const siderStyle: React.CSSProperties = {
     top: 0,
 };
 
-const items: MenuItem[] = [
-    getItem("Профиль", "/profile", <UserOutlined />),
-    getItem("Список задач", "/", <UnorderedListOutlined />),
-];
-
 export const SideMenu = () => {
+    const userRoles = useAppSelector((state) => state.profile.profileInfo?.roles)
     const [collapsed, setCollapsed] = useState(false);
-        const navigate = useNavigate();
-    
-        const handleMenuItem = (key: string) => {
-            navigate(key);
-        };
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+
+
+
+    const handleMenuItem = (key: string) => {
+        navigate(key);
+    };
+
+    const items: MenuItem[] = [
+        getItem("Профиль", "/profile", <UserOutlined />),
+        getItem("Список задач", "/todos", <UnorderedListOutlined />),
+        userRoles?.some(role => role === Roles.ADMIN || role === Roles.MODERATOR) ? getItem("Пользователи", "/users", <TeamOutlined />) : null,
+    ];
 
     return (
         <Sider
@@ -50,7 +63,7 @@ export const SideMenu = () => {
             <Menu
                 theme="dark"
                 mode="inline"
-                defaultSelectedKeys={["/"]}
+                selectedKeys={[location.pathname]}
                 items={items}
                 onClick={({ key }) => handleMenuItem(key)}
             />

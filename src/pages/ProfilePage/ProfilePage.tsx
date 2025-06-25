@@ -1,10 +1,15 @@
-import { Button, Descriptions, DescriptionsProps, Flex, Spin, Typography } from "antd";
+import {
+    Button,
+    Descriptions,
+    DescriptionsProps,
+    Typography,
+} from "antd";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { getProfileInfoAction, logoutAction } from "../../store/actions/profileActions";
+import { logoutAction } from "../../store/actions/profileActions";
 import { useInitNotification } from "../../hooks/useNotification";
-import { FrownOutlined, Loading3QuartersOutlined } from "@ant-design/icons";
+import { FrownOutlined } from "@ant-design/icons";
+import { Loader } from "../../components/Loader/Loader";
 
 export const ProfilePage = () => {
     const profile = useAppSelector((state) => state.profile.profileInfo);
@@ -28,39 +33,18 @@ export const ProfilePage = () => {
         }
     };
 
-    
-    useEffect(() => {
-        const setProfileInfo = async () => {
-            try {
-                if (!profile) {
-                    await dispatch(getProfileInfoAction()).unwrap();
-                }
-            } catch (error) {
-                openNotification({
-                    message: "Ошибка",
-                    component: <FrownOutlined style={{ color: "#ff0e0e" }} />,
-                    description: error as string,
-                    placement: "topRight",
-                });
-            }
-        };
-
-        setProfileInfo();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch]);
-
     const items: DescriptionsProps["items"] = [
         {
-            label: "Имя пользователя",
-            children: profile && profile.username,
+            label: "Имя пользователя:",
+            children: <Typography.Text>{profile?.username}</Typography.Text>,
         },
         {
-            label: "Почтовый адрес",
-            children: profile && profile.email,
+            label: "Почтовый адрес:",
+            children: <Typography.Text>{profile?.email}</Typography.Text>,
         },
         {
-            label: "Телефон",
-            children: (profile && profile.phoneNumber) || "Не указан",
+            label: "Телефон:",
+            children: <Typography.Text>{(profile?.phoneNumber) || "Не указан"}</Typography.Text>,
         },
     ];
 
@@ -71,16 +55,7 @@ export const ProfilePage = () => {
                 Профиль
             </Typography.Title>
             {isLoading ? (
-                <Flex
-                    align="center"
-                    justify="center"
-                    style={{ height: "80vh" }}
-                >
-                    <Spin
-                        indicator={<Loading3QuartersOutlined spin />}
-                        size="large"
-                    />
-                </Flex>
+                <Loader styles={{ height: "80vh" }} />
             ) : (
                 <div style={{ padding: "0 40px" }}>
                     <Descriptions
@@ -88,13 +63,13 @@ export const ProfilePage = () => {
                         items={items}
                         column={1}
                         style={{ margin: "30px 0" }}
+                        labelStyle={{ width: "50%" }}
                     />
                     <Button
                         onClick={handleLogout}
                         color="danger"
                         variant="solid"
                     >
-                        {" "}
                         Выйти
                     </Button>
                 </div>

@@ -1,7 +1,7 @@
 import { TodoItem } from "../TodoItem/TodoItem";
-import { Flex, List, Spin, Typography } from "antd";
+import { Flex, List, Typography } from "antd";
 import { Todo } from "../../types/todos";
-import { Loading3QuartersOutlined } from "@ant-design/icons";
+import { Loader } from "../Loader/Loader";
 
 interface TodosListProps {
     updateTodos: () => Promise<void>;
@@ -33,12 +33,7 @@ export const TodosList: React.FC<TodosListProps> = ({
     return (
         <Flex {...flexConfig}>
             {isLoading ? (
-                <Flex align="center" justify="center">
-                    <Spin
-                        indicator={<Loading3QuartersOutlined spin />}
-                        size="large"
-                    />
-                </Flex>
+                <Loader styles={{ height: "65vh" }}/>
             ) : todos && todos.length === 0 ? (
                 <Typography.Title level={2}>Список задач пуст</Typography.Title>
             ) : (

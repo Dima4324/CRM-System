@@ -9,8 +9,11 @@ import {
 import { Button, Form, Input, Typography } from "antd";
 import { Link } from "react-router-dom";
 import {
+    emailRules,
     maxLengthInputValues,
     minLengthInputValues,
+    phoneNumberRules,
+    usernameRules,
 } from "../../utils/constants";
 import { UserRegistration } from "../../types/users";
 import { register } from "../../api/user";
@@ -26,6 +29,47 @@ interface InputValues {
     email: string;
     phoneNumber?: string;
 }
+
+const loginRules = [
+    {
+        required: true,
+        message: "Поле обязательно для заполнения",
+    },
+    {
+        pattern: /^[A-Za-z][A-Za-z0-9]*$/,
+        message: "Поле можно ввести только на латинском алфавите",
+    },
+    {
+        min: minLengthInputValues.two,
+        message: `Минимальная длина ${minLengthInputValues.two} символа`,
+    },
+    {
+        max: maxLengthInputValues.sixty,
+        message: `Максимальная длина ${maxLengthInputValues.sixty} символов`,
+    },
+];
+
+const passwordRules = [
+    {
+        required: true,
+        message: "Поле обязательно для заполнения",
+    },
+    {
+        min: minLengthInputValues.six,
+        message: `Минимальная длина ${minLengthInputValues.six} символов`,
+    },
+    {
+        max: maxLengthInputValues.sixty,
+        message: `Максимальная длина ${maxLengthInputValues.sixty} символов`,
+    },
+];
+
+const repeatPasswordRules = [
+    {
+        required: true,
+        message: "Поле обязательно для заполнения",
+    },
+];
 
 export const RegisterPage = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -93,25 +137,7 @@ export const RegisterPage = () => {
                     label="Имя пользователя"
                     name="username"
                     layout="vertical"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Поле обязательно для заполнения",
-                        },
-                        {
-                            pattern: /^[A-Za-zА-Яа-яЁё]+$/,
-                            message:
-                                "Поле можно ввести либо на русском или на латинском алфавите",
-                        },
-                        {
-                            min: minLengthInputValues.one,
-                            message: `Минимальная длина ${minLengthInputValues.one} символ`,
-                        },
-                        {
-                            max: maxLengthInputValues.sixty,
-                            message: `Максимальная длина ${maxLengthInputValues.sixty} символов`,
-                        },
-                    ]}
+                    rules={usernameRules}
                     hasFeedback
                 >
                     <Input
@@ -123,25 +149,7 @@ export const RegisterPage = () => {
                     label="Логин"
                     name="login"
                     layout="vertical"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Поле обязательно для заполнения",
-                        },
-                        {
-                            pattern: /^[A-Za-z][A-Za-z0-9]*$/,
-                            message:
-                                "Поле можно ввести только на латинском алфавите",
-                        },
-                        {
-                            min: minLengthInputValues.two,
-                            message: `Минимальная длина ${minLengthInputValues.two} символа`,
-                        },
-                        {
-                            max: maxLengthInputValues.sixty,
-                            message: `Максимальная длина ${maxLengthInputValues.sixty} символов`,
-                        },
-                    ]}
+                    rules={loginRules}
                     hasFeedback
                 >
                     <Input
@@ -153,20 +161,7 @@ export const RegisterPage = () => {
                     label="Пароль"
                     name="password"
                     layout="vertical"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Поле обязательно для заполнения",
-                        },
-                        {
-                            min: minLengthInputValues.six,
-                            message: `Минимальная длина ${minLengthInputValues.six} символов`,
-                        },
-                        {
-                            max: maxLengthInputValues.sixty,
-                            message: `Максимальная длина ${maxLengthInputValues.sixty} символов`,
-                        },
-                    ]}
+                    rules={passwordRules}
                     hasFeedback
                 >
                     <Input.Password
@@ -180,10 +175,7 @@ export const RegisterPage = () => {
                     layout="vertical"
                     dependencies={["password"]}
                     rules={[
-                        {
-                            required: true,
-                            message: "Поле обязательно для заполнения",
-                        },
+                        ...repeatPasswordRules,
                         ({ getFieldValue }) => ({
                             validator(_, value) {
                                 if (
@@ -209,17 +201,7 @@ export const RegisterPage = () => {
                     label="Почтовый адрес"
                     name="email"
                     layout="vertical"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Поле обязательно для заполнения",
-                        },
-                        {
-                            pattern:
-                                /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
-                            message: "Некорректно введена почта",
-                        },
-                    ]}
+                    rules={emailRules}
                     hasFeedback
                 >
                     <Input
@@ -231,16 +213,13 @@ export const RegisterPage = () => {
                     label="Телефон"
                     name="phoneNumber"
                     layout="vertical"
-                    rules={[
-                        {
-                            pattern:
-                                /^(\+7|8)?[\s-]?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/,
-                            message: "Некорректно введен номер телефона",
-                        },
-                    ]}
+                    rules={phoneNumberRules}
                     hasFeedback
                 >
-                    <Input prefix={<PhoneOutlined />} placeholder="+7 XXX XXX XX XX" />
+                    <Input
+                        prefix={<PhoneOutlined />}
+                        placeholder="+7 XXX XXX XX XX"
+                    />
                 </Form.Item>
                 <Form.Item style={{ marginTop: "10px" }}>
                     <Button
