@@ -1,19 +1,17 @@
-import {
-    Button,
-    Descriptions,
-    DescriptionsProps,
-    Typography,
-} from "antd";
+import { Button, Descriptions, DescriptionsProps, Typography } from "antd";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { useNavigate } from "react-router-dom";
 import { logoutAction } from "../../store/actions/profileActions";
 import { useInitNotification } from "../../hooks/useNotification";
 import { FrownOutlined } from "@ant-design/icons";
 import { Loader } from "../../components/Loader/Loader";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export const ProfilePage = () => {
     const profile = useAppSelector((state) => state.profile.profileInfo);
     const isLoading = useAppSelector((state) => state.profile.isLoading);
+    const [errorStatus, setErrorStatus] = useState<number | null>(null);
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -24,12 +22,20 @@ export const ProfilePage = () => {
             await dispatch(logoutAction()).unwrap();
             navigate("/auth");
         } catch (error) {
-            openNotification({
-                message: "Ошибка",
-                component: <FrownOutlined style={{ color: "#ff0e0e" }} />,
-                description: error as string,
-                placement: "topRight",
-            });
+            if (axios.isAxiosError(error)) {
+                if (error.status === 401) {
+                    setErrorStatus(error.status);
+                } else {
+                    openNotification({
+                        message: "Ошибка",
+                        component: (
+                            <FrownOutlined style={{ color: "#ff0e0e" }} />
+                        ),
+                        description: error.message,
+                        placement: "topRight",
+                    });
+                }
+            }
         }
     };
 
@@ -44,9 +50,19 @@ export const ProfilePage = () => {
         },
         {
             label: "Телефон:",
-            children: <Typography.Text>{(profile?.phoneNumber) || "Не указан"}</Typography.Text>,
+            children: (
+                <Typography.Text>
+                    {profile?.phoneNumber || "Не указан"}
+                </Typography.Text>
+            ),
         },
     ];
+
+    useEffect(() => {
+            if (errorStatus) {
+                navigate("/auth");
+            }
+        }, [navigate, errorStatus]);
 
     return (
         <div>
