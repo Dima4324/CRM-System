@@ -78,6 +78,7 @@ const UserRolesModal: FC<UserRolesModalProps> = ({
             <Modal
                 title="Изменение ролей пользователя"
                 open={isModalRolesOpened}
+                onCancel={() => setIsModalRolesOpened(false)}
                 okText="Сохранить"
                 cancelText="Отменить"
                 footer={
