@@ -78,12 +78,11 @@ const UserRolesModal: FC<UserRolesModalProps> = ({
             <Modal
                 title="Изменение ролей пользователя"
                 open={isModalRolesOpened}
-                onCancel={() => setIsModalRolesOpened(false)}
                 okText="Сохранить"
                 cancelText="Отменить"
                 footer={
                     <Flex justify="end" gap="10px">
-                        <Button color="danger" variant="outlined">
+                        <Button color="danger" variant="outlined" onClick={() => setIsModalRolesOpened(false)}>
                             Отменить
                         </Button>
                         <Popconfirm

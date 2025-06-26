@@ -187,11 +187,15 @@ export const UsersListPage = () => {
             {
                 title: "Статус блокировки",
                 dataIndex: "isBlocked",
-                render: (isBlocked) => (
-                    <Typography.Text>
-                        {isBlocked ? "Заблокирован" : "Не заблокирован"}
-                    </Typography.Text>
-                ),
+                // align: "center",
+                render: (isBlocked: boolean) => {
+                    const color = isBlocked ? "error" : "success";
+                    return (
+                        <Tag color={color}>
+                            {isBlocked ? "Заблокирован" : "Активен"}
+                        </Tag>
+                    );
+                },
             },
             {
                 title: "Роли",
