@@ -4,7 +4,7 @@ export interface UserFilters {
     search?: string;
     sortBy?: string;
     sortOrder?: SortOrderType;
-    isBlocked?: boolean;
+    isBlocked?: boolean | "";
     limit?: number; // сколько на странице
     offset?: number; // страницу
 }
