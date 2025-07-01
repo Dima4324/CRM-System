@@ -8,7 +8,7 @@ import {
     Tag,
 } from "antd";
 import { FC } from "react";
-import { returnRoleColor } from "../../utils/user";
+import { colorRoleTagMap } from "../../utils/user";
 import { Roles } from "../../types/admin";
 import { updateUserRights } from "../../api/admin";
 import { NotificationProps, UserInfo } from "../../types/app";
@@ -58,7 +58,7 @@ const UserRolesModal: FC<UserRolesModalProps> = ({
         }
     };
 
-    const options: SelectProps["options"] = [
+    const options: SelectProps<Roles>["options"] = [
         {
             label: Roles.ADMIN,
             value: Roles.ADMIN,
@@ -83,7 +83,11 @@ const UserRolesModal: FC<UserRolesModalProps> = ({
                 cancelText="Отменить"
                 footer={
                     <Flex justify="end" gap="10px">
-                        <Button color="danger" variant="outlined" onClick={() => setIsModalRolesOpened(false)}>
+                        <Button
+                            color="danger"
+                            variant="outlined"
+                            onClick={() => setIsModalRolesOpened(false)}
+                        >
                             Отменить
                         </Button>
                         <Popconfirm
@@ -105,19 +109,16 @@ const UserRolesModal: FC<UserRolesModalProps> = ({
                     }}
                     style={{ width: "100%" }}
                     options={options}
-                    tagRender={({ label, value, closable, onClose }) => {
-                        const color = returnRoleColor(value);
-                        return (
-                            <Tag
-                                color={color}
-                                style={{ margin: "3px" }}
-                                closable={closable}
-                                onClose={onClose}
-                            >
-                                {label}
-                            </Tag>
-                        );
-                    }}
+                    tagRender={({ label, value, closable, onClose }) => (
+                        <Tag
+                            color={colorRoleTagMap[value as Roles]}
+                            style={{ margin: "3px" }}
+                            closable={closable}
+                            onClose={onClose}
+                        >
+                            {label}
+                        </Tag>
+                    )}
                 />
             </Modal>
         </>

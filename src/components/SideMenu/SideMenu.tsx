@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Menu, MenuProps } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -12,19 +12,42 @@ import { Roles } from "../../types/admin";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
-function getItem(
-    label: React.ReactNode,
-    key: React.Key,
-    icon?: React.ReactNode,
-    children?: MenuItem[]
-): MenuItem {
-    return {
-        label,
-        key,
-        icon,
-        children,
-    } as MenuItem;
+interface SideMenuItem {
+    label: React.ReactNode;
+    key: React.Key;
+    icon?: React.ReactNode;
+    children?: MenuItem[];
 }
+
+interface EnhancedMenuItem extends SideMenuItem {
+    allowedRoles?: Roles[];
+}
+
+const isMenuItem = (item: unknown): item is MenuItem => {
+    return (
+        typeof item === "object" &&
+        item !== null &&
+        "label" in item &&
+        "key" in item
+    );
+};
+
+const menuItems: EnhancedMenuItem[] = [
+    { label: "Профиль", key: "/profile", icon: <UserOutlined /> },
+    {
+        label: "Список задач",
+        key: "/todos",
+        icon: <UnorderedListOutlined />,
+    },
+    {
+        label: "Пользователи",
+        key: "/users",
+        icon: <TeamOutlined />,
+        allowedRoles: [Roles.ADMIN, Roles.MODERATOR],
+    },
+];
+
+const filteredValidItems = menuItems.filter((item) => isMenuItem(item));
 
 const siderStyle: React.CSSProperties = {
     overflow: "auto",
@@ -34,24 +57,29 @@ const siderStyle: React.CSSProperties = {
 };
 
 export const SideMenu = () => {
-    const userRoles = useAppSelector((state) => state.profile.profileInfo?.roles)
+    const userRoles = useAppSelector(
+        (state) => state.profile.profileInfo?.roles
+    );
     const [collapsed, setCollapsed] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
 
-
-
-
     const handleMenuItem = (key: string) => {
         navigate(key);
     };
 
-    const items: MenuItem[] = [
-        getItem("Профиль", "/profile", <UserOutlined />),
-        getItem("Список задач", "/todos", <UnorderedListOutlined />),
-        userRoles?.some(role => role === Roles.ADMIN || role === Roles.MODERATOR) ? getItem("Пользователи", "/users", <TeamOutlined />) : null,
-    ];
+    const availableMenuItems = useMemo(() => {
+        return filteredValidItems.filter((item) => {
+            if (item.allowedRoles) {
+                return userRoles?.some((role) =>
+                    item.allowedRoles?.includes(role as Roles)
+                );
+            } else {
+                return true;
+            }
+        });
+    }, [userRoles]);
 
     return (
         <Sider
@@ -64,7 +92,7 @@ export const SideMenu = () => {
                 theme="dark"
                 mode="inline"
                 selectedKeys={[location.pathname]}
-                items={items}
+                items={availableMenuItems}
                 onClick={({ key }) => handleMenuItem(key)}
             />
         </Sider>

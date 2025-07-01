@@ -1,21 +1,22 @@
 import { Flex, Input, Radio, RadioChangeEvent, Typography } from "antd";
 import { FC, memo, useState } from "react";
-import { isAdmin } from "../../utils/user";
 import { SearchOutlined } from "@ant-design/icons";
-import { Role } from "../../types/users";
 import { useAppSelector } from "../../hooks/redux";
+import { useHasRole } from "../../hooks/user";
+import { Roles } from "../../types/admin";
 
 interface UsersListPageHeaderProps {
-    roles: string[] | undefined;
     onSelectedUsers: (e: RadioChangeEvent) => void;
     onSearchUser: (value: string) => void;
     searchValue?: string;
 }
 
 const UsersListPageHeader: FC<UsersListPageHeaderProps> = memo(
-    ({ roles, onSelectedUsers, onSearchUser }) => {
+    ({ onSelectedUsers, onSearchUser }) => {
         const userFilters = useAppSelector((state) => state.userFilters);
         const [searchValue, setSearchValue] = useState(userFilters.search);
+
+        const hasRole = useHasRole();
 
         return (
             <>
@@ -24,10 +25,10 @@ const UsersListPageHeader: FC<UsersListPageHeaderProps> = memo(
                 </Typography.Title>
                 <Flex
                     justify={`${
-                        isAdmin(roles as Role[]) ? "space-between" : "flex-end"
+                        hasRole(Roles.ADMIN) ? "space-between" : "flex-end"
                     }`}
                 >
-                    {isAdmin(roles as Role[]) && (
+                    {hasRole(Roles.ADMIN) && (
                         <Radio.Group
                             defaultValue={userFilters.isBlocked}
                             onChange={onSelectedUsers}

@@ -17,10 +17,13 @@ export const getUsersMeta = async (
             if (value !== undefined && value !== "") {
                 params.append(key, String(value));
             }
+
+            console.log(`Параметр: ${key} = ${value}`);
         });
 
         const response = await easydevApi.get<MetaResponse<User>>(
-            `/admin/users?${params.toString()}`
+            `/admin/users`,
+            { params }
         );
 
         const data = response.data;

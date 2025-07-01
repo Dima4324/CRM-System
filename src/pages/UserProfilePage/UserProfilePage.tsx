@@ -3,13 +3,25 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useInitNotification } from "../../hooks/useNotification";
 import { FrownOutlined } from "@ant-design/icons";
 import { Loader } from "../../components/Loader/Loader";
-import { useCallback, useEffect, useState } from "react";
-import { User, UserRequest } from "../../types/admin";
+import React, { useCallback, useEffect, useState } from "react";
+import { Roles, User, UserRequest } from "../../types/admin";
 import { getUserProfile, updateUserProfile } from "../../api/admin";
 import axios from "axios";
-import { emailRules, phoneNumberRules, usernameRules } from "../../utils/constants";
+import {
+    emailRules,
+    phoneNumberRules,
+    usernameRules,
+} from "../../utils/constants";
+import { ProtectedRoute } from "../../components/ProtectedRoute/ProtectedRoute";
+import { checkFields } from "../../utils/user";
 
-export const UserProfilePage = () => {
+interface UserProfilePageProps {
+    allowedRoles: Roles[];
+}
+
+export const UserProfilePage: React.FC<UserProfilePageProps> = ({
+    allowedRoles,
+}) => {
     const [profile, setProfile] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
@@ -48,16 +60,12 @@ export const UserProfilePage = () => {
 
     const onFinish = async (values: UserRequest): Promise<void> => {
         try {
-            const bodyRequest: UserRequest = {
-                ...(profile?.username !== values.username && {
-                    username: values.username,
-                }),
-                ...(profile?.email !== values.email && { email: values.email }),
-                phoneNumber: values.phoneNumber,
-            };
+            if (profile) {
+                const bodyRequest: UserRequest = checkFields(profile, values);
+                await updateUserProfile(Number(params.id),bodyRequest);
+                await getUser();
+            }
 
-            await updateUserProfile(Number(params.id) as number, bodyRequest);
-            await getUser();
             setIsEditing(false);
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -87,7 +95,7 @@ export const UserProfilePage = () => {
     }, [getUser]);
 
     return (
-        <div>
+        <ProtectedRoute allowedRoles={allowedRoles}>
             {contextHolder}
             <Typography.Title level={2} style={{ textAlign: "center" }}>
                 Профиль
@@ -102,7 +110,7 @@ export const UserProfilePage = () => {
                                 initialValues={{
                                     ...profile,
                                     phoneNumber:
-                                        profile?.phoneNumber || "Не указан",
+                                        profile?.phoneNumber || "",
                                 }}
                                 onFinish={onFinish}
                                 layout="vertical"
@@ -221,6 +229,6 @@ export const UserProfilePage = () => {
                     </Button>
                 </div>
             )}
-        </div>
+        </ProtectedRoute>
     );
 };

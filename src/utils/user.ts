@@ -1,29 +1,19 @@
 import { Roles } from "../types/admin";
-import { Role } from "../types/users";
 
-export const isAdmin = (roles: Role[]): boolean => {
-    return roles.includes(Roles.ADMIN);
-};
+export const checkFields = <T extends object>(currFieldsData: T, newFieldsData: T): Partial<T> => {
+    const result: Partial<T> = {};
 
-export const isModeretor = (roles: Role[]): boolean => {
-    return roles.includes(Roles.MODERATOR);
-};
+    (Object.keys(currFieldsData) as (keyof T)[]).forEach(field => {
+        if (currFieldsData[field] !== newFieldsData[field] || !Object.prototype.hasOwnProperty.call(newFieldsData, field)) {
+            result[field] = newFieldsData[field];
+        }
+    })
 
-export const returnRoleColor = (role: string) => {
-    let color;
-    switch (role) {
-        case Roles.ADMIN:
-            color = "blue";
-            break;
-        case Roles.MODERATOR:
-            color = "orange";
-            break;
-        case Roles.USER:
-            color = "purple";
-            break;
-        default:
-            color = "magenta";
-            break;
-    }
-    return color;
-};
+    return result;
+}
+
+export const colorRoleTagMap = {
+    [Roles.ADMIN]: "blue",
+    [Roles.MODERATOR]: "orange",
+    [Roles.USER]: "purple",
+}

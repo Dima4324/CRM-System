@@ -1,14 +1,14 @@
 import { Table, Tag, Typography } from "antd";
 import type { RadioChangeEvent, TableColumnsType, TableProps } from "antd";
-import { SortOrderType, User } from "../../types/admin";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Roles, SortOrderType, User } from "../../types/admin";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { getUsersMeta } from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FrownOutlined } from "@ant-design/icons";
 import { Loader } from "../../components/Loader/Loader";
 import { useInitNotification } from "../../hooks/useNotification";
-import { returnRoleColor } from "../../utils/user";
+import { colorRoleTagMap } from "../../utils/user";
 import { useAppSelector } from "../../hooks/redux";
 import { UserNameColumn } from "../../components/UsersTable/Columns/UserNameColumn/UserNameColumn";
 import ActionsColumn from "../../components/UsersTable/Columns/ActionsColumn/ActionsColumn";
@@ -24,8 +24,13 @@ import {
     setSortBy,
     setSortOrder,
 } from "../../store/reducers/admin/UserFiltersSlice";
+import { ProtectedRoute } from "../../components/ProtectedRoute/ProtectedRoute";
 
-export const UsersListPage = () => {
+interface UsersListPageProps {
+    allowedRoles: Roles[];
+}
+
+export const UsersListPage: FC<UsersListPageProps> = ({ allowedRoles }) => {
     const roles = useAppSelector((state) => state.profile.profileInfo?.roles);
     const userFilters = useAppSelector((state) => state.userFilters);
     const [users, setUsers] = useState<User[] | null>(null);
@@ -67,6 +72,7 @@ export const UsersListPage = () => {
 
     const debouncedSearch = useDebounce((value: string) => {
         dispatch(setSearch(value));
+        dispatch(setOffset(0));
     }, 600);
 
     const onSearchUser = useCallback(
@@ -198,16 +204,15 @@ export const UsersListPage = () => {
                 },
             },
             {
-                title: "Роли",
+                title: "Роли", 
                 dataIndex: "roles",
                 width: 150,
                 render: (roles) =>
                     roles.map((role: string) => {
-                        const color = returnRoleColor(role);
                         return (
                             <Tag
                                 key={role}
-                                color={color}
+                                color={colorRoleTagMap[role as Roles]}
                                 style={{ margin: "3px" }}
                             >
                                 {role}
@@ -258,13 +263,13 @@ export const UsersListPage = () => {
     );
 
     return (
-        <>
+        <ProtectedRoute
+            allowedRoles={allowedRoles}>
             {contextHolder}
             <div style={{ padding: "0 20px" }}>
                 <UsersListPageHeader
                     onSearchUser={onSearchUser}
                     onSelectedUsers={onSelectedUsers}
-                    roles={roles}
                 />
                 {isLoading ? (
                     <Loader styles={{ height: "80vh" }} />
@@ -299,6 +304,6 @@ export const UsersListPage = () => {
                 openNotification={openNotification}
                 getUsers={getUsers}
             />
-        </>
+        </ProtectedRoute>
     );
 };
