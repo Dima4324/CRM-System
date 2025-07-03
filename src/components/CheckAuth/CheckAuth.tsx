@@ -2,12 +2,17 @@ import { Navigate, useLocation } from "react-router-dom";
 import { MainAppLayout } from "../Layouts/MainAppLayout";
 import { refreshTokenRequest, tokensStorage } from "../../api/user";
 import { useEffect, useState } from "react";
-import { Flex, Spin } from "antd";
-import { Loading3QuartersOutlined } from "@ant-design/icons";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { getProfileInfoAction } from "../../store/actions/profileActions";
+import { Loader } from "../Loader/Loader";
 
 export const CheckAuth = () => {
+    const profile = useAppSelector((state) => state.profile.profileInfo);
+
     const [isLoading, setIsLoading] = useState(true);
     const [isAuth, setIsAuth] = useState(false);
+
+    const dispatch = useAppDispatch();
 
     const location = useLocation();
 
@@ -24,11 +29,18 @@ export const CheckAuth = () => {
                         tokensStorage.accessToken = tokens.accessToken;
                         tokensStorage.refreshToken = tokens.refreshToken;
 
+                        if (!profile) {
+                            await dispatch(getProfileInfoAction()).unwrap();
+                        }
+
                         setIsAuth(true);
                     } catch {
                         setIsAuth(false);
                     }
                 } else {
+                    if (!profile) {
+                        await dispatch(getProfileInfoAction()).unwrap();
+                    }
                     setIsAuth(true);
                 }
             } else {
@@ -38,16 +50,12 @@ export const CheckAuth = () => {
         };
 
         checkToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
 
     if (isLoading) {
         return (
-            <Flex align="center" justify="center" style={{ height: "100vh" }}>
-                <Spin
-                    indicator={<Loading3QuartersOutlined spin />}
-                    size="large"
-                />
-            </Flex>
+            <Loader styles={{ height: "100vh" }}/>
         );
     }
 

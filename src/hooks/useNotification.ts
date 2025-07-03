@@ -1,19 +1,11 @@
 import { notification } from "antd";
-import { ArgsProps } from "antd/es/notification";
-
-interface NotificationProps {
-    message: string;
-    component: React.ReactElement;
-    description?: string | React.ReactNode;
-    placement?: ArgsProps["placement"];
-    showProgress?: boolean;
-    pauseOnHover?: boolean;
-}
+import { NotificationProps } from "../types/app";
+import { useCallback } from "react";
 
 export const useInitNotification = () => {
     const [api, contextHolder] = notification.useNotification();
 
-    const openNotification = ({
+    const openNotification = useCallback(({
         message,
         component,
         description,
@@ -29,7 +21,7 @@ export const useInitNotification = () => {
             showProgress,
             pauseOnHover,
         });
-    };
+    }, [api]);
 
     return { openNotification, contextHolder };
 };

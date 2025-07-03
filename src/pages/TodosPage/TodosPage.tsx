@@ -81,7 +81,7 @@ export const TodosPage = () => {
     return (
         <>
             {contextHolder}
-            <main>
+            <div>
                 <Typography.Title level={2} style={{ textAlign: "center" }}>
                     Список задач
                 </Typography.Title>
@@ -98,7 +98,7 @@ export const TodosPage = () => {
                     editingTodoId={editingTodoId}
                     selectEditingTodo={selectEditingTodo}
                 />
-            </main>
+            </div>
         </>
     );
 };
